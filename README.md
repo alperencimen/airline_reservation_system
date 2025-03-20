@@ -1,1 +1,1 @@
---- Airline Reservation System ---
+The Airline Reservation System (ARS) is a desktop-based software designed to streamline flight bookings for customers while also providing airline staff with seamless access to flights and further management details. This not only ensures a pleased customer but also efficient and fruitful operations prioritizing robustness and security for a hassle-free reservation experience.
