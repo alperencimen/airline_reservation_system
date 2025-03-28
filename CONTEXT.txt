@@ -1,0 +1,102 @@
+The Airline Reservation System (ARS) is a desktop-based software designed to streamline flight bookings for customers while also providing airline staff with seamless access to flights and further management details. This not only ensures a pleased customer but also efficient and fruitful operations prioritizing robustness and security for a hassle-free reservation experience. SRS-ARS-001
+Description of ARS-001 requirement
+
+Every system requirement id includes the id of the corresponding user requirement as a prefix. 
+
+SRS-ARS-001.1
+Description of SRS-ARS-001.1 system requirement, which is related to the user requirement SRS-ARS-001
+
+
+1.	REQUIREMENTS
+1.	User Requirements Specification
+
+SRS-ARS-001
+ARS shall enable new users to create a user account.
+
+SRS-ARS-002
+ARS shall enable users to login their accounts by passing their username and password.
+
+SRS-ARS-003
+ARS shall enable users to search for available flights based on their specified departure and arrival airport names along with corresponding dates.
+
+SRS-ARS-004
+ARS shall allow customers to select a flight from the search results and proceed with booking.
+
+SRS-ARS-005
+ARS shall guide users through a multi-step booking process that clearly displays all essential flight details, ensuring that the user is informed about the decisions (s)he made at every stage.
+
+SRS-ARS-006
+ARS shall allow customers to view their flight details, including booking reference, departure/arrival time, and seat number.
+
+SRS-ARS-007
+ARS shall enable customers to modify or cancel their reservations.
+
+SRS-ARS-008
+ARS shall allow customers to retrieve their booking details using a booking reference number.
+
+SRS-ARS-009
+ARS shall offer a seat preference option (window or aisle) in the main menu after user login, allowing users to view available flights that match their selected preference.
+
+SRS-ARS-010
+ARS shall enable admins to log in their accounts.
+
+SRS-ARS-011
+ARS shall enable admins to monitor all scheduled flights based on their specified departure and arrival airport names along with corresponding dates.
+
+SRS-ARS-012
+ARS shall enable admins to add new flights based on their specified departure and arrival airport names along with corresponding dates. Additionally, admins shall be able to cancel scheduled flights.
+
+SRS-ARS-013 
+ARS shall enable admins to monitor all registered users, including their booking history for security purposes.
+
+SRS-ARS-014
+ARS shall enable admins to suspend or permanently delete user accounts due to suspicious activity, or user requests.
+1.	System Requirements Specification
+
+SRS-SIS-001.1
+ARS shall allow users to create a new account by asking their username, passwords, gender, age, and country. 
+
+SRS-SIS-001.2
+ARS shall check for the passed username, password, gender, age, and country information for completeness and any possible misuse of characters.
+
+SRS-SIS-002.1
+ARS shall securely authenticate users by verifying their username and password upon login.
+
+SRS-SIS-002.2
+ARS shall greet users with their names on the entrance screen.
+
+SRS-SIS-002.3
+ARS shall not share users’ passwords with external users and even with airline staff for security purposes.
+SRS-ARS-003.1
+ARS shall provide a flight search form where users can input departure and arrival airport names along with corresponding dates.
+SRS-ARS-003.2
+ARS shall display search results including flight number, departure and arrival times, available seats, and airline name.
+SRS-ARS-004.1
+ARS shall generate a booking reference number and display it to the user upon completion of the booking.
+SRS-ARS-004.2
+ARS shall process the flight selection and transition to the booking screen within 5 seconds after the user selects a flight from the search results. 
+SRS-ARS-005.1
+ARS shall validate the customer details by comparing the input from the user and the information accessed from the database before confirming the booking.
+SRS-ARS-005.2
+ARS shall carry the input information taken from the user to the next steps of booking through a GUI window that is used to display the essential information (date, seat number, contact info) about the decisions made by the user so far.
+SRS-ARS-006.1
+ARS shall display booked flight details, including booking reference, departure/arrival time, and seat number on the customer dashboard.
+SRS-ARS-007.1
+ARS shall provide an interface for customers to modify or cancel their reservations before the deadline specified by the airline.
+SRS-ARS-008.1
+ARS shall allow customers to retrieve their booking details by entering their booking reference number.
+SRS-ARS-009.1                                                                                                                                                     ARS shall provide a preference section within the GUI where users can set their default seat preference (aisle/window) for future bookings. 
+SRS-ARS-009.2                                                                                                                                                      ARS shall provide a dedicated section that lists all flights with available seats matching the user's preferred seat choice upon user’s request for “see available flights with my preference” button in the GUI.
+SRS-ARS-010.1
+ARS shall authenticate admin username and password using a secure hashing algorithm and check them against the stored records in the DBMS.
+SRS-ARS-011.1
+ARS shall retrieve and display scheduled flights from the database, allowing admins to filter results by departure and arrival airport names, dates, flight number, and airline.
+SRS-ARS-012.1
+ARS shall allow admins to insert new flight records into the database,  ensure uniqueness of flight numbers and prevent duplicate entries.
+SRS-ARS-012.2
+ARS shall update the flight status in the database when an admin cancels a scheduled flight before departure and a notification is sent from the system to inform affected passengers.
+SRS-ARS-013.1
+ARS shall provide an admin dashboard that queries and displays user booking history by getting data from the database.
+SRS-ARS-014.1
+ARS shall allow admins to suspend, or delete user accounts through the admin dashboard by updating the account status field in the database for security reasons.
+For database integration, MySQL will be used as the database management system, and JDBC will be implemented to facilitate communication between the application and the database.
