@@ -163,6 +163,10 @@ public class Main {
 
         User user = userDAO.getUserByUsername(username);
         if (user != null && user.getPassword().equals(password)) {
+            if (!user.isActive()) {
+                System.out.println("Your account has been suspended. Please contact the administrator.");
+                return;
+            }
             currentUser = user;
             System.out.println("Login successful!");
         } else {
