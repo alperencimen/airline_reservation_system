@@ -10,6 +10,7 @@ import com.airline.model.Booking;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -157,9 +158,18 @@ public class Main {
 
     private static void login() throws SQLException {
         System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine().trim();
+        if (username.isEmpty()) {
+            System.out.println("Error: Username cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        String password = scanner.nextLine().trim();
+        if (password.isEmpty()) {
+            System.out.println("Error: Password cannot be empty!");
+            return;
+        }
 
         User user = userDAO.getUserByUsername(username);
         if (user != null && user.getPassword().equals(password)) {
@@ -176,16 +186,36 @@ public class Main {
 
     private static void register() throws SQLException {
         System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine().trim();
+        if (username.isEmpty()) {
+            System.out.println("Error: Username cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        String password = scanner.nextLine().trim();
+        if (password.isEmpty()) {
+            System.out.println("Error: Password cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter gender: ");
-        String gender = scanner.nextLine();
+        String gender = scanner.nextLine().trim();
+        if (gender.isEmpty()) {
+            System.out.println("Error: Gender cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter age: ");
         int age = scanner.nextInt();
         scanner.nextLine(); // consume newline
+        
         System.out.print("Enter country: ");
-        String country = scanner.nextLine();
+        String country = scanner.nextLine().trim();
+        if (country.isEmpty()) {
+            System.out.println("Error: Country cannot be empty!");
+            return;
+        }
 
         User user = new User();
         user.setUsername(username);
@@ -205,11 +235,25 @@ public class Main {
 
     private static void searchFlights() throws SQLException {
         System.out.print("Enter departure airport: ");
-        String departure = scanner.nextLine();
+        String departure = scanner.nextLine().trim();
+        if (departure.isEmpty()) {
+            System.out.println("Error: Departure airport cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter arrival airport: ");
-        String arrival = scanner.nextLine();
+        String arrival = scanner.nextLine().trim();
+        if (arrival.isEmpty()) {
+            System.out.println("Error: Arrival airport cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter date (yyyy-MM-dd): ");
-        String dateStr = scanner.nextLine();
+        String dateStr = scanner.nextLine().trim();
+        if (dateStr.isEmpty()) {
+            System.out.println("Error: Date cannot be empty!");
+            return;
+        }
 
         List<Flight> flights = flightDAO.searchFlights(departure, arrival, java.sql.Date.valueOf(dateStr));
         if (flights.isEmpty()) {
@@ -230,13 +274,32 @@ public class Main {
 
     private static void searchFlightsByPreference() throws SQLException {
         System.out.print("Enter departure airport: ");
-        String departure = scanner.nextLine();
+        String departure = scanner.nextLine().trim();
+        if (departure.isEmpty()) {
+            System.out.println("Error: Departure airport cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter arrival airport: ");
-        String arrival = scanner.nextLine();
+        String arrival = scanner.nextLine().trim();
+        if (arrival.isEmpty()) {
+            System.out.println("Error: Arrival airport cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter date (yyyy-MM-dd): ");
-        String dateStr = scanner.nextLine();
+        String dateStr = scanner.nextLine().trim();
+        if (dateStr.isEmpty()) {
+            System.out.println("Error: Date cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter seat preference (WINDOW/AISLE): ");
-        String seatPreference = scanner.nextLine().toUpperCase();
+        String seatPreference = scanner.nextLine().trim().toUpperCase();
+        if (seatPreference.isEmpty()) {
+            System.out.println("Error: Seat preference cannot be empty!");
+            return;
+        }
 
         List<Flight> flights = flightDAO.searchFlights(departure, arrival, java.sql.Date.valueOf(dateStr));
         if (flights.isEmpty()) {
@@ -291,7 +354,11 @@ public class Main {
 
     private static void cancelBooking() throws SQLException {
         System.out.print("Enter booking reference to cancel: ");
-        String bookingRef = scanner.nextLine();
+        String bookingRef = scanner.nextLine().trim();
+        if (bookingRef.isEmpty()) {
+            System.out.println("Error: Booking reference cannot be empty!");
+            return;
+        }
         
         Booking booking = bookingDAO.getBookingByReference(bookingRef);
         if (booking != null && booking.getUserId() == currentUser.getId()) {
@@ -314,35 +381,77 @@ public class Main {
 
     private static void addNewFlight() throws SQLException {
         System.out.print("Enter flight number: ");
-        String flightNumber = scanner.nextLine();
+        String flightNumber = scanner.nextLine().trim();
+        if (flightNumber.isEmpty()) {
+            System.out.println("Error: Flight number cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter departure airport: ");
-        String departure = scanner.nextLine();
+        String departure = scanner.nextLine().trim();
+        if (departure.isEmpty()) {
+            System.out.println("Error: Departure airport cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter arrival airport: ");
-        String arrival = scanner.nextLine();
-        System.out.print("Enter departure time (yyyy-MM-dd HH:mm): ");
-        String departureTimeStr = scanner.nextLine();
-        System.out.print("Enter arrival time (yyyy-MM-dd HH:mm): ");
-        String arrivalTimeStr = scanner.nextLine();
+        String arrival = scanner.nextLine().trim();
+        if (arrival.isEmpty()) {
+            System.out.println("Error: Arrival airport cannot be empty!");
+            return;
+        }
+        
+        System.out.print("Enter departure time (YYYY-MM-DD HH:mm): ");
+        String departureTimeStr = scanner.nextLine().trim();
+        if (departureTimeStr.isEmpty()) {
+            System.out.println("Error: Departure time cannot be empty!");
+            return;
+        }
+        
+        System.out.print("Enter arrival time (YYYY-MM-DD HH:mm): ");
+        String arrivalTimeStr = scanner.nextLine().trim();
+        if (arrivalTimeStr.isEmpty()) {
+            System.out.println("Error: Arrival time cannot be empty!");
+            return;
+        }
+        
         System.out.print("Enter available seats: ");
         int seats = scanner.nextInt();
         scanner.nextLine(); // consume newline
+        
         System.out.print("Enter airline name: ");
-        String airline = scanner.nextLine();
+        String airline = scanner.nextLine().trim();
+        if (airline.isEmpty()) {
+            System.out.println("Error: Airline name cannot be empty!");
+            return;
+        }
 
-        Flight flight = new Flight();
-        flight.setFlightNumber(flightNumber);
-        flight.setDepartureAirport(departure);
-        flight.setArrivalAirport(arrival);
-        flight.setDepartureTime(LocalDateTime.parse(departureTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        flight.setArrivalTime(LocalDateTime.parse(arrivalTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        flight.setAvailableSeats(seats);
-        flight.setAirlineName(airline);
-        flight.setActive(true);
+        try {
+            LocalDateTime departureTime = LocalDateTime.parse(departureTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            LocalDateTime arrivalTime = LocalDateTime.parse(arrivalTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
-        if (flightDAO.createFlight(flight)) {
-            System.out.println("Flight added successfully!");
-        } else {
-            System.out.println("Failed to add flight!");
+            if (departureTime.isAfter(arrivalTime)) {
+                System.out.println("Error: Departure time cannot be later than arrival time!");
+                return;
+            }
+
+            Flight flight = new Flight();
+            flight.setFlightNumber(flightNumber);
+            flight.setDepartureAirport(departure);
+            flight.setArrivalAirport(arrival);
+            flight.setDepartureTime(departureTime);
+            flight.setArrivalTime(arrivalTime);
+            flight.setAvailableSeats(seats);
+            flight.setAirlineName(airline);
+            flight.setActive(true);
+
+            if (flightDAO.createFlight(flight)) {
+                System.out.println("Flight added successfully!");
+            } else {
+                System.out.println("Failed to add flight!");
+            }
+        } catch (DateTimeParseException e) {
+            System.out.println("Error: Invalid date/time format. Please use YYYY-MM-DD HH:mm format (e.g., 2024-03-02 14:30)");
         }
     }
 
@@ -366,7 +475,11 @@ public class Main {
 
     private static void cancelFlight() throws SQLException {
         System.out.print("Enter flight number to cancel: ");
-        String flightNumber = scanner.nextLine();
+        String flightNumber = scanner.nextLine().trim();
+        if (flightNumber.isEmpty()) {
+            System.out.println("Error: Flight number cannot be empty!");
+            return;
+        }
         
         Flight flight = flightDAO.getFlightByNumber(flightNumber);
         if (flight != null) {
@@ -407,7 +520,11 @@ public class Main {
 
     private static void suspendUser() throws SQLException {
         System.out.print("Enter username to suspend: ");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine().trim();
+        if (username.isEmpty()) {
+            System.out.println("Error: Username cannot be empty!");
+            return;
+        }
         
         User user = userDAO.getUserByUsername(username);
         if (user != null) {
@@ -423,7 +540,11 @@ public class Main {
 
     private static void bookFlight() throws SQLException {
         System.out.print("Enter flight number to book: ");
-        String flightNumber = scanner.nextLine();
+        String flightNumber = scanner.nextLine().trim();
+        if (flightNumber.isEmpty()) {
+            System.out.println("Error: Flight number cannot be empty!");
+            return;
+        }
         
         // Get flight details
         Flight selectedFlight = flightDAO.getFlightByNumber(flightNumber);
