@@ -134,4 +134,29 @@ public class FlightDAO {
         }
         return null;
     }
+
+    public List<Flight> getAllFlights() throws SQLException {
+        String sql = "SELECT * FROM flights WHERE is_active = true";
+        List<Flight> flights = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                Flight flight = new Flight();
+                flight.setId(rs.getInt("id"));
+                flight.setFlightNumber(rs.getString("flight_number"));
+                flight.setDepartureAirport(rs.getString("departure_airport"));
+                flight.setArrivalAirport(rs.getString("arrival_airport"));
+                flight.setDepartureTime(rs.getTimestamp("departure_time").toLocalDateTime());
+                flight.setArrivalTime(rs.getTimestamp("arrival_time").toLocalDateTime());
+                flight.setAvailableSeats(rs.getInt("available_seats"));
+                flight.setAirlineName(rs.getString("airline_name"));
+                flight.setActive(rs.getBoolean("is_active"));
+                flights.add(flight);
+            }
+        }
+        return flights;
+    }
 } 

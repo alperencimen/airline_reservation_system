@@ -343,8 +343,7 @@ public class Main {
     }
 
     private static void viewAllFlights() throws SQLException {
-        // This is a simplified version - you might want to add more search parameters
-        List<Flight> flights = flightDAO.searchFlights("", "", java.sql.Date.valueOf(LocalDateTime.now().toLocalDate()));
+        List<Flight> flights = flightDAO.getAllFlights();
         if (flights.isEmpty()) {
             System.out.println("No flights found!");
             return;
@@ -365,14 +364,41 @@ public class Main {
         System.out.print("Enter flight number to cancel: ");
         String flightNumber = scanner.nextLine();
         
-        // You'll need to add a method in FlightDAO to get flight by number
-        // For now, this is a placeholder
-        System.out.println("Flight cancellation functionality to be implemented!");
+        Flight flight = flightDAO.getFlightByNumber(flightNumber);
+        if (flight != null) {
+            // Check if there are any active bookings for this flight
+            List<Booking> bookings = bookingDAO.getBookingsByFlightId(flight.getId());
+            if (!bookings.isEmpty()) {
+                System.out.println("Cannot cancel flight with active bookings!");
+                return;
+            }
+            
+            flight.setActive(false);
+            if (flightDAO.updateFlightStatus(flight.getId(), false)) {
+                System.out.println("Flight cancelled successfully!");
+            } else {
+                System.out.println("Failed to cancel flight!");
+            }
+        } else {
+            System.out.println("Flight not found!");
+        }
     }
 
     private static void viewAllUsers() throws SQLException {
-        // You'll need to add a method in UserDAO to get all users
-        System.out.println("View all users functionality to be implemented!");
+        List<User> users = userDAO.getAllUsers();
+        if (users.isEmpty()) {
+            System.out.println("No users found!");
+            return;
+        }
+
+        System.out.println("\nAll Users:");
+        for (User user : users) {
+            System.out.printf("Username: %s, Age: %d, Country: %s, Status: %s%n",
+                    user.getUsername(),
+                    user.getAge(),
+                    user.getCountry(),
+                    user.isActive() ? "Active" : "Suspended");
+        }
     }
 
     private static void suspendUser() throws SQLException {

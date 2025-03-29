@@ -90,4 +90,30 @@ public class BookingDAO {
             return pstmt.executeUpdate() > 0;
         }
     }
+
+    public List<Booking> getBookingsByFlightId(int flightId) throws SQLException {
+        String sql = "SELECT * FROM bookings WHERE flight_id = ? AND is_active = true";
+        List<Booking> bookings = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, flightId);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                Booking booking = new Booking();
+                booking.setId(rs.getInt("id"));
+                booking.setBookingReference(rs.getString("booking_reference"));
+                booking.setUserId(rs.getInt("user_id"));
+                booking.setFlightId(rs.getInt("flight_id"));
+                booking.setBookingDate(rs.getTimestamp("booking_date").toLocalDateTime());
+                booking.setSeatNumber(rs.getString("seat_number"));
+                booking.setSeatPreference(rs.getString("seat_preference"));
+                booking.setActive(rs.getBoolean("is_active"));
+                bookings.add(booking);
+            }
+        }
+        return bookings;
+    }
 } 

@@ -64,4 +64,28 @@ public class UserDAO {
             return pstmt.executeUpdate() > 0;
         }
     }
+
+    public List<User> getAllUsers() throws SQLException {
+        String sql = "SELECT * FROM users WHERE is_admin = false";
+        List<User> users = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setGender(rs.getString("gender"));
+                user.setAge(rs.getInt("age"));
+                user.setCountry(rs.getString("country"));
+                user.setAdmin(rs.getBoolean("is_admin"));
+                user.setActive(rs.getBoolean("is_active"));
+                users.add(user);
+            }
+        }
+        return users;
+    }
 } 
