@@ -69,4 +69,69 @@ public class FlightDAO {
             return pstmt.executeUpdate() > 0;
         }
     }
+
+    public boolean updateFlight(Flight flight) throws SQLException {
+        String sql = "UPDATE flights SET available_seats = ? WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, flight.getAvailableSeats());
+            pstmt.setInt(2, flight.getId());
+            
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    public Flight getFlightByNumber(String flightNumber) throws SQLException {
+        String sql = "SELECT * FROM flights WHERE flight_number = ? AND is_active = true";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, flightNumber);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                Flight flight = new Flight();
+                flight.setId(rs.getInt("id"));
+                flight.setFlightNumber(rs.getString("flight_number"));
+                flight.setDepartureAirport(rs.getString("departure_airport"));
+                flight.setArrivalAirport(rs.getString("arrival_airport"));
+                flight.setDepartureTime(rs.getTimestamp("departure_time").toLocalDateTime());
+                flight.setArrivalTime(rs.getTimestamp("arrival_time").toLocalDateTime());
+                flight.setAvailableSeats(rs.getInt("available_seats"));
+                flight.setAirlineName(rs.getString("airline_name"));
+                flight.setActive(rs.getBoolean("is_active"));
+                return flight;
+            }
+        }
+        return null;
+    }
+
+    public Flight getFlightById(int flightId) throws SQLException {
+        String sql = "SELECT * FROM flights WHERE id = ? AND is_active = true";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, flightId);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                Flight flight = new Flight();
+                flight.setId(rs.getInt("id"));
+                flight.setFlightNumber(rs.getString("flight_number"));
+                flight.setDepartureAirport(rs.getString("departure_airport"));
+                flight.setArrivalAirport(rs.getString("arrival_airport"));
+                flight.setDepartureTime(rs.getTimestamp("departure_time").toLocalDateTime());
+                flight.setArrivalTime(rs.getTimestamp("arrival_time").toLocalDateTime());
+                flight.setAvailableSeats(rs.getInt("available_seats"));
+                flight.setAirlineName(rs.getString("airline_name"));
+                flight.setActive(rs.getBoolean("is_active"));
+                return flight;
+            }
+        }
+        return null;
+    }
 } 
