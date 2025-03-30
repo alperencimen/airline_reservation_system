@@ -562,8 +562,12 @@ public class Main {
         // Generate booking reference (simple format: BK + random number)
         String bookingRef = "BK" + (100000 + (int)(Math.random() * 900000));
         
-        // Generate seat number (simple format: row + seat)
-        String seatNumber = (selectedFlight.getAvailableSeats() % 30 + 1) + "A";
+        // Generate seat number (row + seat letter)
+        int row = (selectedFlight.getAvailableSeats() % 30 + 1);
+        // Use different seat letters (A, B, C, D) based on the booking number
+        String[] seatLetters = {"A", "B", "C", "D"};
+        String seatLetter = seatLetters[selectedFlight.getAvailableSeats() % 4];
+        String seatNumber = row + seatLetter;
         
         // Create booking
         Booking booking = new Booking();
