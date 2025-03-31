@@ -5,8 +5,7 @@ import com.airline.dao.UserDAO;
 import com.airline.model.User;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.SQLException;
 
 public class LoginUI extends JFrame {
@@ -20,11 +19,12 @@ public class LoginUI extends JFrame {
         }
     
         setTitle("ARS");
+        // Set the window icon (make sure ars.png is in the classpath)
         setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
         initComponents();
     }
     
@@ -32,7 +32,7 @@ public class LoginUI extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JLabel headerLabel = new JLabel("Airline Reservation System", SwingConstants.CENTER);
+        JLabel headerLabel = new JLabel("Airline Reservation System ", SwingConstants.CENTER);
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         mainPanel.add(headerLabel, BorderLayout.NORTH);
         
@@ -53,13 +53,15 @@ public class LoginUI extends JFrame {
         passPanel.add(passField);
         centerPanel.add(passPanel);
         
-        JButton loginButton = new JButton("Login");
+        JButton loginButton = new JButton("Login \u2705");
         centerPanel.add(loginButton);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JLabel registerLabel = new JLabel("<HTML><U>Register</U></HTML>");
         registerLabel.setForeground(Color.BLUE);
+        // Set hand cursor for interactivity
+        registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         JLabel continueLabel = new JLabel("<HTML><U>Continue without logging in</U></HTML>");
         continueLabel.setForeground(Color.BLUE);
         optionsPanel.add(registerLabel);
@@ -67,6 +69,14 @@ public class LoginUI extends JFrame {
         centerPanel.add(optionsPanel);
         
         mainPanel.add(centerPanel, BorderLayout.CENTER);
+        
+        // Add mouse listener to open the registration window
+        registerLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                SwingUtilities.invokeLater(() -> new RegisterUI().setVisible(true));
+            }
+        });
         
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -110,6 +120,4 @@ public class LoginUI extends JFrame {
         revalidate();
         repaint();
     }
-    
-    
 }
