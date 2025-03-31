@@ -25,17 +25,21 @@ public class Main {
         try {
             System.out.println("=== Airline Reservation System ===");
             System.out.println("1. Terminal Interface");
-            System.out.println("2. GUI Interface (Not Available Yet)");
+            System.out.println("2. GUI Interface");
             System.out.print("Choose interface type: ");
-
+    
             int interfaceChoice = scanner.nextInt();
             scanner.nextLine(); // consume newline
-
+    
             if (interfaceChoice == 1) {
                 startTerminalInterface();
             } else if (interfaceChoice == 2) {
-                System.out.println("GUI interface is not available yet. Please use terminal interface.");
-                startTerminalInterface();
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new com.airline.ui.LoginUI().setVisible(true);
+                    }
+                });
             } else {
                 System.out.println("Invalid choice. Using terminal interface.");
                 startTerminalInterface();
@@ -44,6 +48,7 @@ public class Main {
             System.out.println("Database error: " + e.getMessage());
         }
     }
+    
 
     private static void startTerminalInterface() throws SQLException {
         while (true) {
