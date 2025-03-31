@@ -11,7 +11,6 @@ import java.sql.SQLException;
 public class LoginUI extends JFrame {
 
     public LoginUI() {
-        // Initialize FlatLaf IntelliJ (light theme)
         try {
             UIManager.setLookAndFeel(new FlatIntelliJLaf());
         } catch (Exception ex) {
@@ -19,9 +18,7 @@ public class LoginUI extends JFrame {
         }
     
         setTitle("ARS");
-        // Set the window icon (ensure ars.png is in the classpath)
         setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
-        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
         setLocationRelativeTo(null);
@@ -63,13 +60,13 @@ public class LoginUI extends JFrame {
         registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         JLabel continueLabel = new JLabel("<HTML><U>Continue without logging in</U></HTML>");
         continueLabel.setForeground(Color.BLUE);
+        continueLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         optionsPanel.add(registerLabel);
         optionsPanel.add(continueLabel);
         centerPanel.add(optionsPanel);
         
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         
-        // Open the registration window when "Register" is clicked
         registerLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -77,35 +74,37 @@ public class LoginUI extends JFrame {
             }
         });
         
-        // Login button action with user type check
+        continueLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+                new UserDashboardUI(null).setVisible(true);
+            }
+        });
+        
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText().trim();
                 String password = new String(passField.getPassword()).trim();
-                
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginUI.this, "Username and password cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
                 try {
                     UserDAO userDAO = new UserDAO();
                     User user = userDAO.getUserByUsername(username);
-                    
                     if (user != null && user.getPassword().equals(password)) {
                         if (!user.isActive()) {
                             JOptionPane.showMessageDialog(LoginUI.this, "Your account is suspended. Please contact your administrator.", "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                         JOptionPane.showMessageDialog(LoginUI.this, "Login successful!", "Info", JOptionPane.INFORMATION_MESSAGE);
-                        
-                        // Close login window and open the corresponding dashboard
                         dispose();
                         if (user.isAdmin()) {
                             new AdminDashboardUI().setVisible(true);
                         } else {
-                            new UserDashboardUI().setVisible(true);
+                            new UserDashboardUI(user).setVisible(true);
                         }
                     } else {
                         JOptionPane.showMessageDialog(LoginUI.this, "Invalid username or password!", "Error", JOptionPane.ERROR_MESSAGE);

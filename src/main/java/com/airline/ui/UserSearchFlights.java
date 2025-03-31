@@ -3,28 +3,32 @@ package com.airline.ui;
 import com.airline.dao.FlightDAO;
 import com.airline.model.Flight;
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.airline.model.User;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Arrays;
 
 public class UserSearchFlights extends JFrame {
-
     private JTextField departureField;
     private JTextField arrivalField;
     private JTextField dateField;
     private JTable flightsTable;
     private DefaultTableModel tableModel;
     private FlightDAO flightDAO = new FlightDAO();
+    private User currentUser;
 
-    public UserSearchFlights() {
+    public UserSearchFlights(User currentUser) {
         try {
             UIManager.setLookAndFeel(new FlatIntelliJLaf());
         } catch (Exception ex) {
             System.err.println("Failed to load FlatIntelliJLaf: " + ex.getMessage());
         }
+        this.currentUser = currentUser;
         setTitle("Search Flights");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
@@ -87,7 +91,7 @@ public class UserSearchFlights extends JFrame {
         searchButton.addActionListener(e -> searchFlights());
         goBackButton.addActionListener(e -> {
             dispose();
-            new UserDashboardUI().setVisible(true);
+            new UserDashboardUI(currentUser).setVisible(true);
         });
         
         add(mainPanel);
