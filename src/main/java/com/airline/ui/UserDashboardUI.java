@@ -73,8 +73,10 @@ public class UserDashboardUI extends JFrame {
             SwingUtilities.invokeLater(() -> new UserViewBooking(currentUser).setVisible(true));
         });
         
-        cancelBookingButton.addActionListener(e ->
-            JOptionPane.showMessageDialog(UserDashboardUI.this, "Cancel Booking clicked."));
+        cancelBookingButton.addActionListener(e -> {
+            dispose();
+            SwingUtilities.invokeLater(() -> new UserCancelFlights(currentUser).setVisible(true));
+        });
         
         logoutButton.addActionListener(e -> {
             dispose();
@@ -83,7 +85,6 @@ public class UserDashboardUI extends JFrame {
     }
     
     public static void main(String[] args) {
-        // For testing, provide a dummy user if needed.
         SwingUtilities.invokeLater(() -> new UserDashboardUI(null).setVisible(true));
     }
 }
