@@ -16,6 +16,7 @@ public class UserDashboardUI extends JFrame {
         }
         this.currentUser = currentUser;
         setTitle("User Dashboard - Airline Reservation System");
+        setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 400);
         setLocationRelativeTo(null);
@@ -52,8 +53,10 @@ public class UserDashboardUI extends JFrame {
             dispose();
             SwingUtilities.invokeLater(() -> new UserSearchFlights(currentUser).setVisible(true));
         });
+        
         viewByPreferenceButton.addActionListener(e ->
             JOptionPane.showMessageDialog(UserDashboardUI.this, "View Flights by Seat Preference clicked."));
+        
         bookFlightButton.addActionListener(e -> {
             if (currentUser == null) {
                 JOptionPane.showMessageDialog(UserDashboardUI.this, "Please log in to book a flight!", "Login Required", JOptionPane.ERROR_MESSAGE);
@@ -64,10 +67,15 @@ public class UserDashboardUI extends JFrame {
                 SwingUtilities.invokeLater(() -> new UserBookFlights(currentUser).setVisible(true));
             }
         });
-        viewBookingsButton.addActionListener(e ->
-            JOptionPane.showMessageDialog(UserDashboardUI.this, "View My Bookings clicked."));
+        
+        viewBookingsButton.addActionListener(e -> {
+            dispose();
+            SwingUtilities.invokeLater(() -> new UserViewBooking(currentUser).setVisible(true));
+        });
+        
         cancelBookingButton.addActionListener(e ->
             JOptionPane.showMessageDialog(UserDashboardUI.this, "Cancel Booking clicked."));
+        
         logoutButton.addActionListener(e -> {
             dispose();
             new LoginUI().setVisible(true);
@@ -75,6 +83,7 @@ public class UserDashboardUI extends JFrame {
     }
     
     public static void main(String[] args) {
+        // For testing, provide a dummy user if needed.
         SwingUtilities.invokeLater(() -> new UserDashboardUI(null).setVisible(true));
     }
 }

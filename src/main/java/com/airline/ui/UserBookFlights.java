@@ -7,7 +7,6 @@ import com.airline.model.Flight;
 import com.airline.model.Booking;
 import com.airline.model.User;
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import javax.swing.*;
@@ -32,6 +31,7 @@ public class UserBookFlights extends JFrame {
             return;
         }
         setTitle("Book a Flight - Airline Reservation System");
+        setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 250);
         setLocationRelativeTo(null);

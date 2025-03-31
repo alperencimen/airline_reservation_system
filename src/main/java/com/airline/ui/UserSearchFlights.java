@@ -10,8 +10,6 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
-import java.util.Arrays;
 
 public class UserSearchFlights extends JFrame {
     private JTextField departureField;
@@ -30,6 +28,7 @@ public class UserSearchFlights extends JFrame {
         }
         this.currentUser = currentUser;
         setTitle("Search Flights");
+        setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
