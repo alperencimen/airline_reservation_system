@@ -9,12 +9,10 @@ import com.airline.model.User;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 public class UserCancelFlights extends JFrame {
     private User currentUser;
     private JTextField bookingRefField;
-    private FlightDAO flightDAO = new FlightDAO();
     private BookingDAO bookingDAO = new BookingDAO();
 
     public UserCancelFlights(User currentUser) {
