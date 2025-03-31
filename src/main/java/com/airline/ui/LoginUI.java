@@ -19,7 +19,7 @@ public class LoginUI extends JFrame {
         }
     
         setTitle("ARS");
-        // Set the window icon (make sure ars.png is in the classpath)
+        // Set the window icon (ensure ars.png is in the classpath)
         setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,7 +32,7 @@ public class LoginUI extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JLabel headerLabel = new JLabel("Airline Reservation System ", SwingConstants.CENTER);
+        JLabel headerLabel = new JLabel("Airline Reservation System", SwingConstants.CENTER);
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         mainPanel.add(headerLabel, BorderLayout.NORTH);
         
@@ -60,7 +60,6 @@ public class LoginUI extends JFrame {
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JLabel registerLabel = new JLabel("<HTML><U>Register</U></HTML>");
         registerLabel.setForeground(Color.BLUE);
-        // Set hand cursor for interactivity
         registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         JLabel continueLabel = new JLabel("<HTML><U>Continue without logging in</U></HTML>");
         continueLabel.setForeground(Color.BLUE);
@@ -70,7 +69,7 @@ public class LoginUI extends JFrame {
         
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         
-        // Add mouse listener to open the registration window
+        // Open the registration window when "Register" is clicked
         registerLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -78,6 +77,7 @@ public class LoginUI extends JFrame {
             }
         });
         
+        // Login button action with user type check
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,7 +99,14 @@ public class LoginUI extends JFrame {
                             return;
                         }
                         JOptionPane.showMessageDialog(LoginUI.this, "Login successful!", "Info", JOptionPane.INFORMATION_MESSAGE);
-                        openNextScreen();
+                        
+                        // Close login window and open the corresponding dashboard
+                        dispose();
+                        if (user.isAdmin()) {
+                            new AdminDashboardUI().setVisible(true);
+                        } else {
+                            new UserDashboardUI().setVisible(true);
+                        }
                     } else {
                         JOptionPane.showMessageDialog(LoginUI.this, "Invalid username or password!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -110,14 +117,5 @@ public class LoginUI extends JFrame {
         });
         
         add(mainPanel);
-    }
-    
-    private void openNextScreen() {
-        getContentPane().removeAll();
-        JLabel welcomeLabel = new JLabel("Welcome!", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-        add(welcomeLabel);
-        revalidate();
-        repaint();
     }
 }
