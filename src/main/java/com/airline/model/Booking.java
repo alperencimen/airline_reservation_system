@@ -2,7 +2,7 @@ package com.airline.model;
 
 import java.time.LocalDateTime;
 
-public class Booking {
+public class Booking implements ARSModel {
     private int id;
     private String bookingReference;
     private int userId;
@@ -77,4 +77,4 @@ public class Booking {
     public void setActive(boolean active) {
         isActive = active;
     }
-} 
+}

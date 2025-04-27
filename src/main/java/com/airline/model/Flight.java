@@ -2,7 +2,7 @@ package com.airline.model;
 
 import java.time.LocalDateTime;
 
-public class Flight {
+public class Flight implements ARSModel {
     private int id;
     private String flightNumber;
     private String departureAirport;
@@ -86,4 +86,4 @@ public class Flight {
     public void setActive(boolean active) {
         isActive = active;
     }
-} 
+}

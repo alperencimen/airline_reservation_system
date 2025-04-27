@@ -5,7 +5,7 @@ import com.airline.model.User;
 import javax.swing.*;
 import java.awt.*;
 
-public class UserDashboardUI extends JFrame {
+public class UserDashboardUI extends JFrame implements ARSView {
     private User currentUser;
     
     public UserDashboardUI(User currentUser) {
@@ -82,6 +82,11 @@ public class UserDashboardUI extends JFrame {
             dispose();
             new LoginUI().setVisible(true);
         });
+    }
+    
+    @Override
+    public void display() {
+        this.setVisible(true);
     }
     
     public static void main(String[] args) {

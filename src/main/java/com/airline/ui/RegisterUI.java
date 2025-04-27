@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class RegisterUI extends JFrame {
+public class RegisterUI extends JFrame implements ARSView {
 
     private JTextField userField;
     private JPasswordField passField;
@@ -185,5 +185,10 @@ public class RegisterUI extends JFrame {
         cancelButton.addActionListener(e -> dispose());
         
         add(mainPanel);
+    }
+
+    @Override
+    public void display() {
+        this.setVisible(true);
     }
 }

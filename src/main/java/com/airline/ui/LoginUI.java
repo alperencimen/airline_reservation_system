@@ -8,7 +8,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 
-public class LoginUI extends JFrame {
+public class LoginUI extends JFrame implements ARSView {
+    @Override
+    public void display() {
+        this.setVisible(true);
+    }
 
     public LoginUI() {
         try {

@@ -1,6 +1,6 @@
 package com.airline.model;
 
-public class User {
+public class User implements ARSModel {
     private int id;
     private String username;
     private String password;
@@ -75,4 +75,4 @@ public class User {
     public void setActive(boolean active) {
         isActive = active;
     }
-} 
+}
