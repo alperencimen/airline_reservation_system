@@ -1,7 +1,7 @@
 package com.airline.controller;
 
 import com.airline.model.User;
-import com.airline.ui.UserDashboardUI;
+import com.airline.view.UserDashboardUI;
 
 public class UserController implements ARSController {
     private User currentUser;

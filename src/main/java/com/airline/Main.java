@@ -1,7 +1,7 @@
 package com.airline;
 
 import com.airline.controller.UserController;
-import com.airline.ui.LoginUI;
+import com.airline.view.LoginUI;
 
 public class Main {
     public static void main(String[] args) {

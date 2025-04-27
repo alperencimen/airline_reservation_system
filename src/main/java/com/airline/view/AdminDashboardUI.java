@@ -1,4 +1,4 @@
-package com.airline.ui;
+package com.airline.view;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import javax.swing.*;

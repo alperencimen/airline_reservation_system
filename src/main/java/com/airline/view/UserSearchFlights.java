@@ -1,4 +1,4 @@
-package com.airline.ui;
+package com.airline.view;
 
 import com.airline.dao.FlightDAO;
 import com.airline.model.Flight;
