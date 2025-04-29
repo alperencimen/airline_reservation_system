@@ -30,8 +30,8 @@ public class UserBookFlights extends JFrame {
             new LoginUI().setVisible(true);
             return;
         }
-        setTitle("Book a Flight - Airline Reservation System");
-        setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
+        setTitle("Book a Flight");
+        setIconImage(new ImageIcon(getClass().getResource("/images/ars_login.png")).getImage());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 250);
         setLocationRelativeTo(null);
@@ -74,11 +74,11 @@ public class UserBookFlights extends JFrame {
         try {
             Flight selectedFlight = flightDAO.getFlightByNumber(flightNumber);
             if (selectedFlight == null) {
-                JOptionPane.showMessageDialog(this, "Flight not found!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Flight not found! Make sure that you entered a valid flight information.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (selectedFlight.getAvailableSeats() <= 0) {
-                JOptionPane.showMessageDialog(this, "No seats available on this flight!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No seats left on this flight!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             int available = selectedFlight.getAvailableSeats();
@@ -108,16 +108,15 @@ public class UserBookFlights extends JFrame {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+/*
+    //Uncomment this part only if you want to run the UserBookFlights without main code itself. (Visualization purposes)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            //dummy user---
             User testUser = new User();
             testUser.setId(1);
             testUser.setUsername("testuser");
             testUser.setActive(true);
             testUser.setAdmin(false);
-            // End Dummy User ---
 
             UserBookFlights bookFlightsUI = new UserBookFlights(testUser);
 
@@ -125,4 +124,6 @@ public class UserBookFlights extends JFrame {
 
         });
     }
+ */
+
 }

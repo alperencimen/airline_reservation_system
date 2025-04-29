@@ -28,7 +28,7 @@ public class UserSearchFlights extends JFrame {
         }
         this.currentUser = currentUser;
         setTitle("Search Flights");
-        setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/images/ars_login.png")).getImage());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
@@ -101,7 +101,7 @@ public class UserSearchFlights extends JFrame {
         String arrival = arrivalField.getText().trim();
         String dateStr = dateField.getText().trim();
         if (departure.isEmpty() || arrival.isEmpty() || dateStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "All fields must be entered!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
@@ -128,15 +128,14 @@ public class UserSearchFlights extends JFrame {
         }
     }
 
+    /*
+    //Uncomment this part only if you want to run the UserSearchFlights without main code itself. (Visualization purposes)
     public static void main(String[] args) {
-        // Ensure the UI is created and shown on the Event Dispatch Thread (EDT)
         SwingUtilities.invokeLater(() -> {
-            // Create an instance of the UserSearchFlights UI.
-            // Passing 'null' for the user is acceptable for testing search functionality,
-            // as login isn't strictly required just to view flights.
             UserSearchFlights searchFlightsUI = new UserSearchFlights(null);
-            // Make it visible
             searchFlightsUI.setVisible(true);
         });
     }
+
+     */
 }

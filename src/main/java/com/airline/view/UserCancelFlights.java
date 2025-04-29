@@ -214,7 +214,7 @@ public class UserCancelFlights extends JFrame {
         }
     }
 /*
-    //Uncomment this part only if you want to run the LoginUI without main code itself. (Visualization purposes)
+    //Uncomment this part only if you want to run the UserCancelFlights without main code itself. (Visualization purposes)
     // Main method for testing remains, but needs a valid User and existing Booking Ref in DB to fully test cancellation
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

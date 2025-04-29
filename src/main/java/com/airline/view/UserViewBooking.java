@@ -31,8 +31,8 @@ public class UserViewBooking extends JFrame {
             new LoginUI().setVisible(true);
             return;
         }
-        setTitle("My Bookings - Airline Reservation System");
-        setIconImage(new ImageIcon(getClass().getResource("ars.png")).getImage());
+        setTitle("My Bookings");
+        setIconImage(new ImageIcon(getClass().getResource("/images/ars_login.png")).getImage());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
@@ -87,8 +87,13 @@ public class UserViewBooking extends JFrame {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+/*
+    //Uncomment this part only if you want to run the LoginUI without main code itself. (Visualization purposes)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new UserViewBooking(new User()).setVisible(true));
     }
+
+ */
+
 }

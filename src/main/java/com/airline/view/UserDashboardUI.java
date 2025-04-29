@@ -179,6 +179,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
         SwingUtilities.invokeLater(() -> this.setVisible(true));
     }
 
+    //Uncomment this part only if you want to run the UserDashboardUI without main code itself. (Visualization purposes)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // For testing, create a dummy user or pass null
