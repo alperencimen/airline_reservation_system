@@ -9,16 +9,16 @@ import java.awt.event.*;
 import java.net.URL;
 import java.sql.SQLException;
 
-public class LoginUI extends JFrame implements ARSView {
-    private JTextField userField;
-    private JPasswordField passField;
+public class AdminLoginUI extends JFrame implements ARSView {
+    private JTextField adminUserField;
+    private JPasswordField adminPassField;
 
     @Override
     public void display() {
         SwingUtilities.invokeLater(() -> this.setVisible(true));
     }
 
-    public LoginUI() {
+    public AdminLoginUI() {
         try {
             UIManager.setLookAndFeel(new FlatIntelliJLaf());
         } catch (UnsupportedLookAndFeelException e) {
@@ -27,12 +27,12 @@ public class LoginUI extends JFrame implements ARSView {
             System.err.println("An unexpected error occurred during Look and Feel setup: " + ex.getMessage());
         }
 
+        setTitle("ARS - Admin Login Screen");
 
-        setTitle("ARS - Login Screen");
-
-        setSize(650, 500);
-        setMinimumSize(new Dimension(550, 450));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Increased default and minimum height
+        setSize(650, 600); // Increased height
+        setMinimumSize(new Dimension(600, 550)); // Increased minimum height
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Dispose, don't exit app
         setLocationRelativeTo(null);
 
         loadWindowIcon();
@@ -40,7 +40,8 @@ public class LoginUI extends JFrame implements ARSView {
     }
 
     private void loadWindowIcon() {
-        String iconPath = "/images/ars_login.png"; //ars_login image is used for the login screen.
+        // Use the same login logo for consistency, or create a specific admin logo
+        String iconPath = "/images/ars_login_admin.png";
         try {
             URL iconUrl = getClass().getResource(iconPath);
             if (iconUrl != null) {
@@ -68,7 +69,7 @@ public class LoginUI extends JFrame implements ARSView {
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         northPanel.setOpaque(false); //make transparant when true
 
-        String logoPath = "/images/ars_login.png";
+        String logoPath = "/images/ars_login_admin.png"; // Using same logo
         try {
             URL logoUrl = getClass().getResource(logoPath);
             if (logoUrl != null) {
@@ -76,7 +77,7 @@ public class LoginUI extends JFrame implements ARSView {
 
                 if (originalLogoIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                     Image originalImage = originalLogoIcon.getImage();
-                    int desiredWidth = 480;
+                    int desiredWidth = 480; // Same width as LoginUI
                     int desiredHeight = -1;
                     Image scaledImage = originalImage.getScaledInstance(desiredWidth, desiredHeight, Image.SCALE_SMOOTH); // SCALE_SMOOTH provides better scaling
                     ImageIcon scaledLogoIcon = new ImageIcon(scaledImage);
@@ -102,7 +103,7 @@ public class LoginUI extends JFrame implements ARSView {
             e.printStackTrace();
         }
 
-        JLabel headerLabel = new JLabel("Login to Your ARS Account", SwingConstants.CENTER);
+        JLabel headerLabel = new JLabel("Administrator Login", SwingConstants.CENTER); // Changed header
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         northPanel.add(headerLabel);
@@ -118,33 +119,33 @@ public class LoginUI extends JFrame implements ARSView {
         gbc.gridy = 0;
         gbc.weightx = 0;
         gbc.anchor = GridBagConstraints.EAST;
-        centerPanel.add(new JLabel("Username:"), gbc);
+        centerPanel.add(new JLabel("Admin Username:"), gbc); // Changed label text
 
-        userField = new JTextField(20);
+        adminUserField = new JTextField(); // Removed column argument
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        centerPanel.add(userField, gbc);
+        centerPanel.add(adminUserField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weightx = 0;
         gbc.anchor = GridBagConstraints.EAST;
-        centerPanel.add(new JLabel("Password:"), gbc);
+        centerPanel.add(new JLabel("Admin Password:"), gbc); // Changed label text
 
-        passField = new JPasswordField(20);
+        adminPassField = new JPasswordField(); // Removed column argument
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        centerPanel.add(passField, gbc);
+        centerPanel.add(adminPassField, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton loginButton = new JButton("Login");
-        loginButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        loginButton.setMargin(new Insets(5, 15, 5, 15));
-        buttonPanel.add(loginButton);
+        JButton adminLoginButton = new JButton("Admin Login"); // Changed button text
+        adminLoginButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        adminLoginButton.setMargin(new Insets(5, 15, 5, 15));
+        buttonPanel.add(adminLoginButton);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -157,78 +158,39 @@ public class LoginUI extends JFrame implements ARSView {
         gbc.insets = new Insets(10, 8, 10, 8);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        Font optionsFont = new Font("SansSerif", Font.PLAIN, 14);
+        // --- SOUTH Panel (Only Back Button) ---
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Centered layout
+        JButton backButton = new JButton("Back to User Login");
+        backButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        backButton.setMargin(new Insets(5, 15, 5, 15));
+        southPanel.add(backButton);
 
-        JLabel registerLabel = new JLabel("<HTML><U>Register</U></HTML>");
-        registerLabel.setFont(optionsFont);
-        registerLabel.setForeground(Color.BLUE.darker());
-        registerLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        mainPanel.add(southPanel, BorderLayout.SOUTH); // Add south panel
+        getRootPane().setDefaultButton(adminLoginButton); // Default button is admin login
 
-        JLabel continueLabel = new JLabel("<HTML><U>Continue without logging in</U></HTML>");
-        continueLabel.setForeground(Color.BLUE.darker());
-        continueLabel.setFont(optionsFont);
-        continueLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // --- Action Listeners ---
+        adminLoginButton.addActionListener(e -> handleAdminLogin()); // Link to admin login handler
 
-        JLabel adminLoginLabel = new JLabel("<HTML><U>Admin Login</U></HTML>");
-        adminLoginLabel.setFont(optionsFont);
-        adminLoginLabel.setForeground(Color.RED.darker());
-        adminLoginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        optionsPanel.add(registerLabel);
-        optionsPanel.add(continueLabel);
-        optionsPanel.add(adminLoginLabel);
-
-        mainPanel.add(optionsPanel, BorderLayout.SOUTH);
-        getRootPane().setDefaultButton(loginButton);
-
-        registerLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                SwingUtilities.invokeLater(() -> {
-                    RegisterUI registerUI = new RegisterUI();
-                    registerUI.display();
-                });
-            }
+        backButton.addActionListener(e -> {
+            dispose(); // Close this admin login window
+            SwingUtilities.invokeLater(() -> {
+                LoginUI loginUI = new LoginUI(); // Go back to the main login screen
+                loginUI.display();
+            });
         });
-
-        continueLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                dispose();
-                SwingUtilities.invokeLater(() -> {
-                    UserDashboardUI userDashboard = new UserDashboardUI(null);
-                    userDashboard.display();
-                });
-            }
-        });
-
-        adminLoginLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                dispose(); // Close the current LoginUI
-                SwingUtilities.invokeLater(() -> {
-                    // Assuming AdminLoginUI exists and has a constructor and a display method
-                    AdminLoginUI adminLogin = new AdminLoginUI();
-                    adminLogin.display(); // Or adminLogin.setVisible(true);
-                });
-            }
-        });
-
-
-        loginButton.addActionListener(e -> handleLogin());
 
         add(mainPanel);
     }
 
-    private void handleLogin() {
-        String username = userField.getText().trim();
-        String password = new String(passField.getPassword()).trim();
+    // Method to handle the ADMIN login logic
+    private void handleAdminLogin() {
+        String username = adminUserField.getText().trim();
+        String password = new String(adminPassField.getPassword()).trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(LoginUI.this,
-                    "Username and password fields cannot be empty!",
-                    "Login Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Admin username and password cannot be empty!",
+                    "Admin Login Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -236,50 +198,48 @@ public class LoginUI extends JFrame implements ARSView {
             UserDAO userDAO = new UserDAO();
             User user = userDAO.getUserByUsername(username);
 
-            if (user != null && !user.isAdmin() && user.getPassword().equals(password)) {//If the passed username and password does not belong to an admin, proceed.
+            // Check if user exists, IS an admin, and password matches
+            if (user != null && user.isAdmin() && user.getPassword().equals(password)) {
                 if (!user.isActive()) {
-                    JOptionPane.showMessageDialog(LoginUI.this,
-                            "Your account is suspended. Please contact your administrator.",
+                    JOptionPane.showMessageDialog(this,
+                            "Admin account is suspended.",
                             "Account Suspended", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                JOptionPane.showMessageDialog(LoginUI.this,
-                        "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
+                JOptionPane.showMessageDialog(this,
+                        "Admin Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // Close admin login window
 
+                // Open Admin Dashboard
                 SwingUtilities.invokeLater(() -> {
-                    UserDashboardUI userDashboard = new UserDashboardUI(user);
-                    userDashboard.display();
+                    AdminDashboardUI adminDashboard = new AdminDashboardUI();
+                    adminDashboard.setVisible(true); // Or display() if it implements ARSView
                 });
 
-            } else if (user != null && user.isAdmin()) {
-                JOptionPane.showMessageDialog(LoginUI.this,
-                        "Invalid username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
-            }
-            else {
-                JOptionPane.showMessageDialog(LoginUI.this,
-                        "Invalid username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Invalid admin credentials
+                JOptionPane.showMessageDialog(this,
+                        "Invalid Admin username or password!", "Admin Login Failed", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(LoginUI.this,
-                    "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Database error during admin login: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(LoginUI.this,
+            JOptionPane.showMessageDialog(this,
                     "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
 
 /*
-//Uncomment this part only if you want to run the LoginUI without main code itself. (Visualization purposes)
+//Uncomment this part only if you want to run the AdminLoginUI without main code itself. (Visualization purposes)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            LoginUI login = new LoginUI();
-            login.display();
+            AdminLoginUI adminLogin = new AdminLoginUI();
+            adminLogin.display();
         });
     }
-
- */
+*/
 }

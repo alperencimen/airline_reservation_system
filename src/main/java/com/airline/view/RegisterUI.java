@@ -324,7 +324,7 @@ public class RegisterUI extends JFrame implements ARSView {
     }
 
 /*
-//Uncommand this part only if you want to run the RegisterUI without main code itself. (for Visualization purposes)
+//Uncomment this part only if you want to run the RegisterUI without main code itself. (for Visualization purposes)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             RegisterUI register = new RegisterUI();
