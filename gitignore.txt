@@ -1,0 +1,10 @@
+# Ignore compiled Java classes
+*.class
+# Ignore system files
+.DS_Store
+# Ignore VSCode and JetBrains project files
+.vscode/
+.idea/
+# Ignore Maven/Gradle build output
+target/
+
