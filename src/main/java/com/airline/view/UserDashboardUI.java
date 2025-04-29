@@ -17,7 +17,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
             System.err.println("Failed to load FlatIntelliJLaf: " + ex.getMessage());
         }
         this.currentUser = currentUser;
-        setTitle("ARS - User Dashboard");
+        setTitle("User Dashboard");
 
         loadWindowIcon(); // Load icon using helper method
 
@@ -54,7 +54,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 15)); // Increased vertical gap
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 20, 20)); // Adjusted padding
 
-        // --- North Panel (Header + Help Button) ---
+        // Header + Help Button
         JPanel northAreaPanel = new JPanel(new BorderLayout(10, 0)); // Use BorderLayout for north area
         northAreaPanel.setOpaque(false); // Make transparent
 
@@ -73,8 +73,8 @@ public class UserDashboardUI extends JFrame implements ARSView {
         helpButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(UserDashboardUI.this,
                     "For any inconvenience or issue, please reach out to us using the information below:\n\n" // The message to display
-                    + "Phone: +90 216 564 9000\n"
-                    + "Email: help@ars.com",
+                            + "Phone: +90 216 564 9000\n"
+                            + "Email: help@ars.com",
                     "Help Box",
                     JOptionPane.INFORMATION_MESSAGE);
         });
@@ -86,7 +86,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
         mainPanel.add(northAreaPanel, BorderLayout.NORTH);
 
 
-        // --- Center Panel (Dashboard Buttons) ---
+        //Dashboard Buttons
         JPanel centerPanel = new JPanel(new GridLayout(3, 2, 15, 15)); // Increased gaps
         JButton searchFlightsButton = new JButton("Search Flights");
         JButton settingsButton = new JButton("Settings"); // Renamed from viewByPreferenceButton
@@ -104,17 +104,19 @@ public class UserDashboardUI extends JFrame implements ARSView {
         cancelBookingButton.setFont(buttonFont);
         logoutButton.setFont(buttonFont);
 
-        centerPanel.add(searchFlightsButton);
-        centerPanel.add(settingsButton);
-        centerPanel.add(bookFlightButton);
-        centerPanel.add(viewBookingsButton);
-        centerPanel.add(cancelBookingButton);
-        centerPanel.add(logoutButton);
+        // Add buttons in the desired order
+        centerPanel.add(searchFlightsButton);   // Row 1, Col 1
+        centerPanel.add(bookFlightButton);      // Row 1, Col 2
+        centerPanel.add(viewBookingsButton);    // Row 2, Col 1
+        centerPanel.add(cancelBookingButton);   // Row 2, Col 2
+        centerPanel.add(settingsButton);        // Row 3, Col 1
+        centerPanel.add(logoutButton);          // Row 3, Col 2
+
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         add(mainPanel);
 
-        // --- Action Listeners for Center Buttons ---
+        // Action Listeners for Center Buttons
         searchFlightsButton.addActionListener(e -> {
             dispose();
             SwingUtilities.invokeLater(() -> {

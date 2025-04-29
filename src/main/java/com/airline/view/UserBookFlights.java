@@ -101,6 +101,11 @@ public class UserBookFlights extends JFrame {
                 JOptionPane.showMessageDialog(this, "Booking successful!\nBooking Reference: " + bookingRef +
                         "\nFlight: " + selectedFlight.getFlightNumber() +
                         "\nSeat: " + seatNumber, "Info", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // Close this booking window
+                SwingUtilities.invokeLater(() -> {
+                    UserDashboardUI dashboard = new UserDashboardUI(currentUser);
+                    dashboard.display(); // Show the dashboard
+                });
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to create booking!", "Error", JOptionPane.ERROR_MESSAGE);
             }
