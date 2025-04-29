@@ -34,4 +34,15 @@ public class AdminDashboardUI extends JFrame {
         
         add(mainPanel);
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            AdminDashboardUI adminDashboard = new AdminDashboardUI();
+
+            adminDashboard.setVisible(true);
+        });
+    }
+
+
+
 }

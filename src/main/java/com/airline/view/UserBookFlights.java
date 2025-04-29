@@ -108,4 +108,21 @@ public class UserBookFlights extends JFrame {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            //dummy user---
+            User testUser = new User();
+            testUser.setId(1);
+            testUser.setUsername("testuser");
+            testUser.setActive(true);
+            testUser.setAdmin(false);
+            // End Dummy User ---
+
+            UserBookFlights bookFlightsUI = new UserBookFlights(testUser);
+
+            bookFlightsUI.setVisible(true);
+
+        });
+    }
 }

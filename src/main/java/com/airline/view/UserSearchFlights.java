@@ -127,4 +127,16 @@ public class UserSearchFlights extends JFrame {
             JOptionPane.showMessageDialog(this, "Invalid date format! Please use yyyy-MM-dd.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public static void main(String[] args) {
+        // Ensure the UI is created and shown on the Event Dispatch Thread (EDT)
+        SwingUtilities.invokeLater(() -> {
+            // Create an instance of the UserSearchFlights UI.
+            // Passing 'null' for the user is acceptable for testing search functionality,
+            // as login isn't strictly required just to view flights.
+            UserSearchFlights searchFlightsUI = new UserSearchFlights(null);
+            // Make it visible
+            searchFlightsUI.setVisible(true);
+        });
+    }
 }
