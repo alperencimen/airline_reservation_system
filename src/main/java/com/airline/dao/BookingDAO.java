@@ -8,34 +8,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingDAO {
-    
+
     public boolean createBooking(Booking booking) throws SQLException {
         String sql = "INSERT INTO bookings (booking_reference, user_id, flight_id, booking_date, seat_number, seat_preference, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setString(1, booking.getBookingReference());
             pstmt.setInt(2, booking.getUserId());
             pstmt.setInt(3, booking.getFlightId());
             pstmt.setTimestamp(4, Timestamp.valueOf(booking.getBookingDate()));
             pstmt.setString(5, booking.getSeatNumber());
             pstmt.setString(6, booking.getSeatPreference());
-            pstmt.setBoolean(7, true);
-            
+            pstmt.setBoolean(7, true); // New bookings are active
+
             return pstmt.executeUpdate() > 0;
         }
     }
 
     public Booking getBookingByReference(String bookingReference) throws SQLException {
         String sql = "SELECT * FROM bookings WHERE booking_reference = ?";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setString(1, bookingReference);
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 Booking booking = new Booking();
                 booking.setId(rs.getInt("id"));
@@ -55,13 +55,13 @@ public class BookingDAO {
     public List<Booking> getUserBookings(int userId) throws SQLException {
         String sql = "SELECT * FROM bookings WHERE user_id = ? AND is_active = true";
         List<Booking> bookings = new ArrayList<>();
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
-            
+
             while (rs.next()) {
                 Booking booking = new Booking();
                 booking.setId(rs.getInt("id"));
@@ -80,13 +80,13 @@ public class BookingDAO {
 
     public boolean updateBookingStatus(int bookingId, boolean isActive) throws SQLException {
         String sql = "UPDATE bookings SET is_active = ? WHERE id = ?";
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setBoolean(1, isActive);
             pstmt.setInt(2, bookingId);
-            
+
             return pstmt.executeUpdate() > 0;
         }
     }
@@ -94,13 +94,13 @@ public class BookingDAO {
     public List<Booking> getBookingsByFlightId(int flightId) throws SQLException {
         String sql = "SELECT * FROM bookings WHERE flight_id = ? AND is_active = true";
         List<Booking> bookings = new ArrayList<>();
-        
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, flightId);
             ResultSet rs = pstmt.executeQuery();
-            
+
             while (rs.next()) {
                 Booking booking = new Booking();
                 booking.setId(rs.getInt("id"));
@@ -116,4 +116,27 @@ public class BookingDAO {
         }
         return bookings;
     }
-} 
+    /**
+     * Retrieves a list of active booked seat numbers for a specific flight.
+     * @param flightId The ID of the flight.
+     * @return A list of booked seat numbers (e.g., "1A", "12C").
+     * @throws SQLException If a database access error occurs.
+     */
+    public List<String> getBookedSeatNumbers(int flightId) throws SQLException {
+        String sql = "SELECT seat_number FROM bookings WHERE flight_id = ? AND is_active = true";
+        List<String> bookedSeats = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, flightId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                bookedSeats.add(rs.getString("seat_number").toUpperCase()); // Store in uppercase for consistency
+            }
+        }
+        return bookedSeats;
+    }
+
+}

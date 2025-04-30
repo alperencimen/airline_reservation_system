@@ -3,10 +3,10 @@ package com.airline.view;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.airline.model.User;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder; // Import EmptyBorder
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent; // Import ActionEvent
-import java.net.URL; // Import URL
+import java.awt.event.ActionEvent;
+import java.net.URL;
 
 public class UserDashboardUI extends JFrame implements ARSView {
     private User currentUser;
@@ -18,20 +18,19 @@ public class UserDashboardUI extends JFrame implements ARSView {
             System.err.println("Failed to load FlatIntelliJLaf: " + ex.getMessage());
         }
         this.currentUser = currentUser;
-        setTitle("User Dashboard"); // Updated title
+        setTitle("User Dashboard");
 
-        loadWindowIcon(); // Load icon using helper method
+        loadWindowIcon();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(650, 550); // Adjusted size for banner
-        setMinimumSize(new Dimension(550, 500)); // Set minimum
+        setSize(650, 550);
+        setMinimumSize(new Dimension(550, 500));
         setLocationRelativeTo(null);
         initComponents();
     }
 
     // Helper method to load the window icon
     private void loadWindowIcon() {
-        // Assuming logo is in /images/ars_login.png or similar
         String iconPath = "/images/ars_login.png";
         try {
             URL iconUrl = getClass().getResource(iconPath);
@@ -50,25 +49,24 @@ public class UserDashboardUI extends JFrame implements ARSView {
         }
     }
 
-
     private void initComponents() {
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10)); // Adjusted gap
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 20, 20)); // Adjusted padding
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 20, 20));
 
-        // --- North Panel (Banner + Header + Help/Notification Buttons) ---
-        JPanel northPanel = new JPanel(); // Changed to hold banner and header/help combo
-        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS)); // Stack vertically
+        // North Panel (Banner + Header + Help/Notification Buttons)
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         northPanel.setOpaque(false);
 
         // Load and add Dashboard Banner
-        String bannerPath = "/images/ars_user_dashboard.png"; // Path to dashboard banner
+        String bannerPath = "/images/ars_user_dashboard.png";
         try {
             URL bannerUrl = getClass().getResource(bannerPath);
             if (bannerUrl != null) {
                 ImageIcon originalBannerIcon = new ImageIcon(bannerUrl);
                 if (originalBannerIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                     Image originalImage = originalBannerIcon.getImage();
-                    int desiredWidth = 480; // Same width as LoginUI logo
+                    int desiredWidth = 480;
                     int desiredHeight = -1; // Keep aspect ratio
                     Image scaledImage = originalImage.getScaledInstance(desiredWidth, desiredHeight, Image.SCALE_SMOOTH);
                     ImageIcon scaledBannerIcon = new ImageIcon(scaledImage);
@@ -77,7 +75,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
                     bannerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
                     bannerLabel.setMaximumSize(new Dimension(desiredWidth, scaledBannerIcon.getIconHeight()));
                     northPanel.add(bannerLabel); // Add banner first
-                    northPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing below banner
+                    northPanel.add(Box.createRigidArea(new Dimension(0, 10)));
                 } else {
                     System.err.println("Dashboard banner '" + bannerPath + "' found but failed to load.");
                 }
@@ -89,11 +87,11 @@ public class UserDashboardUI extends JFrame implements ARSView {
             e.printStackTrace();
         }
 
-        // --- Header and Top-Right Buttons Panel (Horizontal) ---
+        // Header and Top-Right Buttons Panel (Horizontal)
         JPanel headerButtonsPanel = new JPanel(new BorderLayout(10, 0));
         headerButtonsPanel.setOpaque(false); // Make transparent
 
-        // --- Panel for Title and Greeting (Vertical) ---
+        // Panel for Title and Greeting (Vertical)
         JPanel titleGreetingPanel = new JPanel();
         titleGreetingPanel.setLayout(new BoxLayout(titleGreetingPanel, BoxLayout.Y_AXIS));
         titleGreetingPanel.setOpaque(false);
@@ -101,36 +99,36 @@ public class UserDashboardUI extends JFrame implements ARSView {
         // Create Header Label (Always visible)
         JLabel headerLabel = new JLabel("User Dashboard", SwingConstants.CENTER);
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center align header text
-        titleGreetingPanel.add(headerLabel); // Add main title
+        headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleGreetingPanel.add(headerLabel);
 
-        // Create and add Greeting Label (Conditional)
+        // Create and add Greeting Label
         if (currentUser != null && currentUser.getUsername() != null) {
             JLabel greetingLabel = new JLabel("Welcome back, " + currentUser.getUsername() + "!", SwingConstants.CENTER);
-            greetingLabel.setFont(new Font("SansSerif", Font.PLAIN, 16)); // Slightly smaller font for greeting
+            greetingLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
             greetingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            titleGreetingPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Small space below title
-            titleGreetingPanel.add(greetingLabel); // Add greeting label
+            titleGreetingPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+            titleGreetingPanel.add(greetingLabel);
         }
 
         headerButtonsPanel.add(titleGreetingPanel, BorderLayout.CENTER); // Add Title+Greeting panel in the middle
 
-        // --- Panel for Top-Right Buttons (Help + Notification) ---
+        //  Panel for Top-Right Buttons (Help + Notification)
         JPanel topRightButtonsPanel = new JPanel();
-        topRightButtonsPanel.setLayout(new BoxLayout(topRightButtonsPanel, BoxLayout.Y_AXIS)); // Stack vertically
+        topRightButtonsPanel.setLayout(new BoxLayout(topRightButtonsPanel, BoxLayout.Y_AXIS));
         topRightButtonsPanel.setOpaque(false);
 
         // Create Help Button
         JButton helpButton = new JButton("?");
-        helpButton.setFont(new Font("SansSerif", Font.BOLD, 12)); // Smaller font
-        helpButton.setMargin(new Insets(2, 5, 2, 5)); // Smaller padding
+        helpButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+        helpButton.setMargin(new Insets(2, 5, 2, 5));
         helpButton.setFocusable(false); // Optional: remove focus border
-        helpButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Align center within BoxLayout
+        helpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Add action listener to help button
         helpButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(UserDashboardUI.this,
-                    "For any inconvenience or issue, please reach out to us using the information below:\n\n" // The message to display
+                    "For any inconvenience or issue, please reach out to us using the information below:\n\n"
                             + "Phone: +90 216 564 9000\n"
                             + "Email: help@ars.com",
                     "Help Box",
@@ -141,12 +139,11 @@ public class UserDashboardUI extends JFrame implements ARSView {
         // Add small space between buttons
         topRightButtonsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        // Create Notification Button (using a bell icon/emoji if possible, else text)
-        // Note: Emoji rendering depends on OS and font support
-        JButton notificationButton = new JButton("\uD83D\uDD14"); // Bell emoji (🔔)
+        // Create Notification Button
+        JButton notificationButton = new JButton("\uD83D\uDD14");
         // JButton notificationButton = new JButton("N"); // Alternative text
-        notificationButton.setFont(new Font("SansSerif", Font.PLAIN, 16)); // Increased font size
-        notificationButton.setMargin(new Insets(2, 7, 2, 7)); // Adjusted margin slightly
+        notificationButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        notificationButton.setMargin(new Insets(2, 7, 2, 7));
         notificationButton.setFocusable(false);
         notificationButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Align center within BoxLayout
 
@@ -166,34 +163,31 @@ public class UserDashboardUI extends JFrame implements ARSView {
                         "You have no new notifications.", // Example message
                         "Notifications",
                         JOptionPane.INFORMATION_MESSAGE);
-                // Eventually, this might open UserNotificationUI
-                // dispose();
-                // SwingUtilities.invokeLater(() -> new UserNotificationUI(currentUser).display());
+
             }
         });
-        topRightButtonsPanel.add(notificationButton); // Add notification button below help
+        topRightButtonsPanel.add(notificationButton);
 
-        headerButtonsPanel.add(topRightButtonsPanel, BorderLayout.EAST); // Add the button panel to the right
+        headerButtonsPanel.add(topRightButtonsPanel, BorderLayout.EAST);
 
-        // Add an invisible component to the WEST to balance the buttons panel and keep header centered
-        // Adjust width to match the button panel's preferred width for better centering
+
         headerButtonsPanel.add(Box.createRigidArea(new Dimension(topRightButtonsPanel.getPreferredSize().width, 1)), BorderLayout.WEST);
 
 
         // Add the header/buttons panel below the banner in the main north panel
-        headerButtonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center this sub-panel
+        headerButtonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         northPanel.add(headerButtonsPanel);
 
         // Add the combined north panel (banner + header/buttons) to the main panel's north
         mainPanel.add(northPanel, BorderLayout.NORTH);
 
 
-        // --- Center Panel (Dashboard Buttons) ---
-        JPanel centerPanel = new JPanel(new GridLayout(3, 2, 15, 15)); // Increased gaps
+        // Center Panel (Dashboard Buttons)
+        JPanel centerPanel = new JPanel(new GridLayout(3, 2, 15, 15));
         // Add padding inside the grid panel itself
         centerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         JButton searchFlightsButton = new JButton("Search Flights");
-        JButton settingsButton = new JButton("Settings"); // Renamed from viewByPreferenceButton
+        JButton settingsButton = new JButton("Settings");
         JButton bookFlightButton = new JButton("Book a Flight");
         JButton viewBookingsButton = new JButton("View My Bookings");
         JButton cancelBookingButton = new JButton("Cancel Booking");
@@ -216,24 +210,22 @@ public class UserDashboardUI extends JFrame implements ARSView {
         centerPanel.add(settingsButton);        // Row 3, Col 1
         centerPanel.add(logoutButton);          // Row 3, Col 2
 
-        // --- Wrap centerPanel in a Scroll Pane ---
+        // Wrap centerPanel in a Scroll Pane
         JScrollPane scrollPane = new JScrollPane(centerPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Remove scroll pane border if desired
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        // Adjust scroll speed (optional)
-        // scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        // Add the scroll pane (containing the buttons) to the main panel's center
+
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         add(mainPanel);
 
-        // --- Action Listeners for Center Buttons ---
+        // Action Listeners for Center Buttons
         searchFlightsButton.addActionListener(e -> {
             dispose();
             SwingUtilities.invokeLater(() -> {
                 UserSearchFlights searchUI = new UserSearchFlights(currentUser);
-                searchUI.setVisible(true); // Assuming display() or setVisible()
+                searchUI.setVisible(true);
             });
         });
 
