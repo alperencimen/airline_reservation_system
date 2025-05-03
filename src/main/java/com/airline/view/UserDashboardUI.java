@@ -158,12 +158,8 @@ public class UserDashboardUI extends JFrame implements ARSView {
                 dispose();
                 SwingUtilities.invokeLater(() -> new LoginUI().display());
             } else {
-                // Placeholder for actual notification display logic
-                JOptionPane.showMessageDialog(UserDashboardUI.this,
-                        "You have no new notifications.", // Example message
-                        "Notifications",
-                        JOptionPane.INFORMATION_MESSAGE);
-
+                // Open the actual notification UI
+                SwingUtilities.invokeLater(() -> new UserNotificationUI(currentUser).setVisible(true));
             }
         });
         topRightButtonsPanel.add(notificationButton);
@@ -229,8 +225,11 @@ public class UserDashboardUI extends JFrame implements ARSView {
             });
         });
 
-        settingsButton.addActionListener(e ->
-                JOptionPane.showMessageDialog(UserDashboardUI.this, "Settings section is opened."));
+        settingsButton.addActionListener(e -> {
+            dispose();
+            SwingUtilities.invokeLater(() -> new SettingsUI(currentUser).setVisible(true));
+        });
+
 
         bookFlightButton.addActionListener(e -> {
             if (currentUser == null) {
