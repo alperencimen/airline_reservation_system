@@ -10,8 +10,10 @@ public class Flight implements ARSModel {
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private int availableSeats;
+    private int availablePreferredSeats;
     private boolean isActive;
     private String airlineName;
+    private int totalSeats;
 
     // Getters
     public int getId() {
@@ -42,8 +44,17 @@ public class Flight implements ARSModel {
         return availableSeats;
     }
 
+    public int getAvailablePreferredSeats() {
+        return availablePreferredSeats;
+    }
+
     public String getAirlineName() {
-        return airlineName; }
+        return airlineName;
+    }
+
+    public int getTotalSeats() {
+        return totalSeats;
+    }
 
     // Setters
     public void setId(int id) {
@@ -74,10 +85,18 @@ public class Flight implements ARSModel {
         this.availableSeats = availableSeats;
     }
 
+    public void setAvailablePreferredSeats(int availablePreferredSeats) {
+        this.availablePreferredSeats = availablePreferredSeats;
+    }
+
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { this.isActive = active; }
 
     public void setAirlineName(String airlineName) {
         this.airlineName = airlineName;
+    }
+
+    public void setTotalSeats(int totalSeats) {
+        this.totalSeats = totalSeats;
     }
 }

@@ -179,7 +179,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
 
 
         // Center Panel (Dashboard Buttons)
-        JPanel centerPanel = new JPanel(new GridLayout(3, 2, 15, 15));
+        JPanel centerPanel = new JPanel(new GridLayout(4, 2, 15, 15));
         // Add padding inside the grid panel itself
         centerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         JButton searchFlightsButton = new JButton("Search Flights");
@@ -187,6 +187,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
         JButton bookFlightButton = new JButton("Book a Flight");
         JButton viewBookingsButton = new JButton("View My Bookings");
         JButton cancelBookingButton = new JButton("Cancel Booking");
+        JButton preferredFlightsButton = new JButton("View Preferred Flights");
         JButton logoutButton = new JButton("Logout");
 
         // Increase button font size slightly
@@ -196,6 +197,7 @@ public class UserDashboardUI extends JFrame implements ARSView {
         bookFlightButton.setFont(buttonFont);
         viewBookingsButton.setFont(buttonFont);
         cancelBookingButton.setFont(buttonFont);
+        preferredFlightsButton.setFont(buttonFont);
         logoutButton.setFont(buttonFont);
 
         // Add buttons in the desired order
@@ -203,8 +205,9 @@ public class UserDashboardUI extends JFrame implements ARSView {
         centerPanel.add(bookFlightButton);      // Row 1, Col 2
         centerPanel.add(viewBookingsButton);    // Row 2, Col 1
         centerPanel.add(cancelBookingButton);   // Row 2, Col 2
-        centerPanel.add(settingsButton);        // Row 3, Col 1
-        centerPanel.add(logoutButton);          // Row 3, Col 2
+        centerPanel.add(preferredFlightsButton);// Row 3, Col 1
+        centerPanel.add(settingsButton);        // Row 3, Col 2
+        centerPanel.add(logoutButton);          // Row 4, Col 1
 
         // Wrap centerPanel in a Scroll Pane
         JScrollPane scrollPane = new JScrollPane(centerPanel);
@@ -276,6 +279,31 @@ public class UserDashboardUI extends JFrame implements ARSView {
         logoutButton.addActionListener(e -> {
             dispose();
             SwingUtilities.invokeLater(() -> new LoginUI().display());
+        });
+
+        // Add action listener for preferred flights button
+        preferredFlightsButton.addActionListener(e -> {
+            if (currentUser == null) {
+                JOptionPane.showMessageDialog(UserDashboardUI.this,
+                    "Please log in to view preferred flights!",
+                    "Login Required",
+                    JOptionPane.ERROR_MESSAGE);
+                dispose();
+                SwingUtilities.invokeLater(() -> new LoginUI().display());
+            } else if (currentUser.getDefaultSeatPreference() == null || currentUser.getDefaultSeatPreference().isEmpty()) {
+                JOptionPane.showMessageDialog(UserDashboardUI.this,
+                    "Please set your seat preference in Settings first.",
+                    "No Preference Set",
+                    JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+                SwingUtilities.invokeLater(() -> new SettingsUI(currentUser).setVisible(true));
+            } else {
+                dispose();
+                SwingUtilities.invokeLater(() -> {
+                    UserPreferredFlightsUI preferredFlightsUI = new UserPreferredFlightsUI(currentUser);
+                    preferredFlightsUI.setVisible(true);
+                });
+            }
         });
     }
 

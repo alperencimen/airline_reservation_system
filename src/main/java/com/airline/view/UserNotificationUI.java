@@ -63,7 +63,6 @@ public class UserNotificationUI extends JFrame {
         JButton goBackButton = new JButton("Go Back");
         goBackButton.addActionListener(e -> {
             dispose();
-            SwingUtilities.invokeLater(() -> new UserDashboardUI(currentUser).display());
         });
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

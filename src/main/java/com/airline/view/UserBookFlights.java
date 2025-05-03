@@ -9,16 +9,21 @@ import com.airline.model.User;
 import java.awt.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class UserBookFlights extends JFrame {
     private User currentUser;
+    private String selectedFlightNumber;
     private JTextField flightNumberField;
     private FlightDAO flightDAO = new FlightDAO();
     private BookingDAO bookingDAO = new BookingDAO();
+    private DefaultTableModel tableModel;
+    private JTable flightsTable;
 
     private static final int TOTAL_ROWS = 30;
     private static final char[] SEAT_LETTERS = {'A', 'B', 'C', 'D'};
@@ -26,12 +31,13 @@ public class UserBookFlights extends JFrame {
     private static final char LAST_WINDOW_SEAT = SEAT_LETTERS[SEAT_LETTERS.length - 1];
 
     public UserBookFlights(User currentUser) {
+        this.currentUser = currentUser;
+        this.selectedFlightNumber = null;
         try {
             UIManager.setLookAndFeel(new FlatIntelliJLaf());
         } catch(Exception ex) {
             System.err.println("Failed to load FlatIntelliJLaf: " + ex.getMessage());
         }
-        this.currentUser = currentUser;
         if (this.currentUser == null) {
             JOptionPane.showMessageDialog(this, "Please log in to book a flight!", "Login Required", JOptionPane.ERROR_MESSAGE);
             dispose();
@@ -45,11 +51,78 @@ public class UserBookFlights extends JFrame {
         setMinimumSize(new Dimension(400, 250));
         setLocationRelativeTo(null);
         initComponents();
+        loadFlights();
+    }
+
+    public UserBookFlights(User currentUser, String flightNumber) {
+        this.currentUser = currentUser;
+        this.selectedFlightNumber = flightNumber;
+        try {
+            UIManager.setLookAndFeel(new FlatIntelliJLaf());
+        } catch(Exception ex) {
+            System.err.println("Failed to load FlatIntelliJLaf: " + ex.getMessage());
+        }
+        if (this.currentUser == null) {
+            JOptionPane.showMessageDialog(this, "Please log in to book a flight!", "Login Required", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            SwingUtilities.invokeLater(() -> new LoginUI().display());
+            return;
+        }
+        setTitle("Book a Flight");
+        setIconImage(new ImageIcon(getClass().getResource("/images/ars_login.png")).getImage());
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(450, 300);
+        setMinimumSize(new Dimension(400, 250));
+        setLocationRelativeTo(null);
+        
+        if (flightNumber != null) {
+            // If flight number is provided, go straight to seat selection
+            SwingUtilities.invokeLater(() -> {
+                findAndBookFlight();
+                dispose(); // Close this window after showing seat selection
+            });
+        } else {
+            // Otherwise show the booking page
+            initComponents();
+            loadFlights();
+        }
+    }
+
+    private void loadFlights() {
+        try {
+            List<Flight> flights = flightDAO.getAllFlights();
+            tableModel.setRowCount(0);
+            for (Flight flight : flights) {
+                tableModel.addRow(new Object[]{
+                    flight.getFlightNumber(),
+                    flight.getDepartureAirport(),
+                    flight.getArrivalAirport(),
+                    flight.getDepartureTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                    flight.getTotalSeats()
+                });
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Error loading flights: " + ex.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Initialize table model and table
+        tableModel = new DefaultTableModel(new Object[]{"Flight Number", "Departure", "Arrival", "Time", "Total Seats"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        flightsTable = new JTable(tableModel);
+        JScrollPane tableScrollPane = new JScrollPane(flightsTable);
+        mainPanel.add(tableScrollPane, BorderLayout.CENTER);
 
         JLabel headerLabel = new JLabel("Book a Flight", SwingConstants.CENTER);
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
@@ -118,11 +191,16 @@ public class UserBookFlights extends JFrame {
         return display.toString();
     }
 
-    private void findAndBookFlight() {
-        String flightNumber = flightNumberField.getText().trim().toUpperCase();
-        if (flightNumber.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Flight number cannot be empty!", "Input Error", JOptionPane.WARNING_MESSAGE);
-            return;
+    public void findAndBookFlight() {
+        String flightNumber;
+        if (selectedFlightNumber != null) {
+            flightNumber = selectedFlightNumber;
+        } else {
+            flightNumber = flightNumberField.getText().trim().toUpperCase();
+            if (flightNumber.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Flight number cannot be empty!", "Input Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         }
 
         try {
@@ -133,24 +211,19 @@ public class UserBookFlights extends JFrame {
                 return;
             }
 
-            List<String> bookedSeats = bookingDAO.getBookedSeatNumbers(selectedFlight.getId());
-            List<String> allPossibleSeats = generateAllSeats(TOTAL_ROWS, SEAT_LETTERS);
-            List<String> availableSeatsList = new ArrayList<>(allPossibleSeats);
-            availableSeatsList.removeAll(bookedSeats);
-
-            if (availableSeatsList.isEmpty()) {
+            if (selectedFlight.getAvailableSeats() <= 0) {
                 JOptionPane.showMessageDialog(this, "Sorry, no seats are currently available on flight " + flightNumber + ".", "No Seats Available", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            List<String> windowSeats = new ArrayList<>();
-            List<String> aisleSeats = new ArrayList<>();
-            for (String seat : availableSeatsList) {
-                char seatLetter = seat.charAt(seat.length() - 1);
-                if (isWindowSeat(seatLetter)) windowSeats.add(seat);
-                else aisleSeats.add(seat);
-            }
+            int totalSeats = selectedFlight.getTotalSeats();
+            int seatsPerRow = 4; // A, B, C, D
+            int totalRows = (int) Math.ceil((double) totalSeats / seatsPerRow);
 
+            // Get all booked seats for this flight
+            List<String> bookedSeats = bookingDAO.getBookedSeatNumbers(selectedFlight.getId());
+            
+            // Create seat selection dialog
             JPanel seatSelectionPanel = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(5, 5, 5, 5);
@@ -158,118 +231,218 @@ public class UserBookFlights extends JFrame {
             gbc.weightx = 1.0;
             gbc.weighty = 1.0;
 
-            Dimension preferredSize = new Dimension(200, 150);
+            // Create left side seats (A-B)
+            JPanel leftSeats = new JPanel(new GridLayout(0, 2, 5, 5));
+            // Create right side seats (C-D)
+            JPanel rightSeats = new JPanel(new GridLayout(0, 2, 5, 5));
+            // Create aisle label with smaller gap
+            JLabel aisleLabel = new JLabel("AISLE", SwingConstants.CENTER);
+            aisleLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+            aisleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Reduced padding
 
-            if (currentUser.getDefaultSeatPreference() == null) {
-                JTextArea windowTextArea = new JTextArea(formatSeatsForDisplay(windowSeats, 5));
-                windowTextArea.setEditable(false);
-                windowTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                JScrollPane windowScrollPane = new JScrollPane(windowTextArea);
-                windowScrollPane.setBorder(BorderFactory.createTitledBorder("Window Seats"));
-                windowScrollPane.setPreferredSize(preferredSize);
-
-                JTextArea aisleTextArea = new JTextArea(formatSeatsForDisplay(aisleSeats, 5));
-                aisleTextArea.setEditable(false);
-                aisleTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                JScrollPane aisleScrollPane = new JScrollPane(aisleTextArea);
-                aisleScrollPane.setBorder(BorderFactory.createTitledBorder("Aisle Seats"));
-                aisleScrollPane.setPreferredSize(preferredSize);
-
-                gbc.gridx = 0; gbc.gridy = 0;
-                seatSelectionPanel.add(windowScrollPane, gbc);
-                gbc.gridx = 1;
-                seatSelectionPanel.add(aisleScrollPane, gbc);
-            } else if (currentUser.getDefaultSeatPreference().equalsIgnoreCase("WINDOW")) {
-                JTextArea windowTextArea = new JTextArea(formatSeatsForDisplay(windowSeats, 5));
-                windowTextArea.setEditable(false);
-                windowTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                JScrollPane windowScrollPane = new JScrollPane(windowTextArea);
-                windowScrollPane.setBorder(BorderFactory.createTitledBorder("Window Seats"));
-                windowScrollPane.setPreferredSize(preferredSize);
-
-                gbc.gridx = 0; gbc.gridy = 0;
-                seatSelectionPanel.add(windowScrollPane, gbc);
-            } else if (currentUser.getDefaultSeatPreference().equalsIgnoreCase("AISLE")) {
-                JTextArea aisleTextArea = new JTextArea(formatSeatsForDisplay(aisleSeats, 5));
-                aisleTextArea.setEditable(false);
-                aisleTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                JScrollPane aisleScrollPane = new JScrollPane(aisleTextArea);
-                aisleScrollPane.setBorder(BorderFactory.createTitledBorder("Aisle Seats"));
-                aisleScrollPane.setPreferredSize(preferredSize);
-
-                gbc.gridx = 0; gbc.gridy = 0;
-                seatSelectionPanel.add(aisleScrollPane, gbc);
-            }
-
-            JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            inputPanel.add(new JLabel("Enter Desired Seat (e.g., 1A):"));
-            JTextField seatInputTextField = new JTextField(5);
-            inputPanel.add(seatInputTextField);
-
-            gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.weighty = 0;
-            seatSelectionPanel.add(inputPanel, gbc);
-
-            int result = JOptionPane.showOptionDialog(this, seatSelectionPanel, "Select Your Seat for Flight " + flightNumber,
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-
-            if (result == JOptionPane.OK_OPTION) {
-                String desiredSeatInput = seatInputTextField.getText();
-                if (desiredSeatInput == null || desiredSeatInput.trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this,"Seat selection cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
-                    return;
+            char[] seatLetters = {'A', 'B', 'C', 'D'};
+            int seatIndex = 0;
+            for (int row = 1; row <= totalRows; row++) {
+                // Left side seats (A-B)
+                for (int i = 0; i < 2; i++) {
+                    if (seatIndex >= totalSeats) break;
+                    String seat = row + String.valueOf(seatLetters[i]);
+                    JButton seatButton = createSeatButton(seat, bookedSeats, selectedFlight);
+                    leftSeats.add(seatButton);
+                    seatIndex++;
                 }
-                String desiredSeat = desiredSeatInput.trim().toUpperCase();
-
-                if (!allPossibleSeats.contains(desiredSeat)) {
-                    JOptionPane.showMessageDialog(this,
-                            "Invalid seat format: '" + desiredSeatInput + "'. Please use format like '1A', '23C'.",
-                            "Invalid Seat Format", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (availableSeatsList.contains(desiredSeat)) {
-                    String bookingRef = "BK" + (100000 + (int)(Math.random() * 900000));
-
-                    Booking booking = new Booking();
-                    booking.setBookingReference(bookingRef);
-                    booking.setUserId(currentUser.getId());
-                    booking.setFlightId(selectedFlight.getId());
-                    booking.setBookingDate(LocalDateTime.now());
-                    booking.setSeatNumber(desiredSeat);
-
-                    char seatLetter = desiredSeat.charAt(desiredSeat.length() - 1);
-                    booking.setSeatPreference(isWindowSeat(seatLetter) ? "WINDOW" : "AISLE");
-                    booking.setActive(true);
-
-                    if (bookingDAO.createBooking(booking)) {
-                        selectedFlight.setAvailableSeats(selectedFlight.getAvailableSeats() - 1);
-                        flightDAO.updateFlight(selectedFlight);
-
-                        JOptionPane.showMessageDialog(this, "Booking successful!\nBooking Reference: " + bookingRef +
-                                        "\nFlight: " + selectedFlight.getFlightNumber() +
-                                        "\nSeat: " + desiredSeat + " (" + booking.getSeatPreference() + ")",
-                                "Booking Confirmed", JOptionPane.INFORMATION_MESSAGE);
-
-                        dispose();
-                        SwingUtilities.invokeLater(() -> new UserDashboardUI(currentUser).display());
-
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Failed to create booking in the database!", "Booking Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(this, "Seat " + desiredSeat + " is not available. Please choose from the lists.", "Seat Unavailable", JOptionPane.ERROR_MESSAGE);
+                // Right side seats (C-D)
+                for (int i = 2; i < 4; i++) {
+                    if (seatIndex >= totalSeats) break;
+                    String seat = row + String.valueOf(seatLetters[i]);
+                    JButton seatButton = createSeatButton(seat, bookedSeats, selectedFlight);
+                    rightSeats.add(seatButton);
+                    seatIndex++;
                 }
             }
+
+            // Add components to the main grid
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            seatSelectionPanel.add(leftSeats, gbc);
+
+            gbc.gridx = 1;
+            seatSelectionPanel.add(aisleLabel, gbc);
+
+            gbc.gridx = 2;
+            seatSelectionPanel.add(rightSeats, gbc);
+
+            // Create a container panel for the seat selection
+            JPanel containerPanel = new JPanel(new BorderLayout());
+            containerPanel.add(seatSelectionPanel, BorderLayout.CENTER);
+            
+            // Add a title at the top
+            JLabel titleLabel = new JLabel("Select Your Seat for Flight " + flightNumber, SwingConstants.CENTER);
+            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+            containerPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // Create the dialog with a larger size to accommodate all seats
+            JDialog seatDialog = new JDialog(this, "Seat Selection", true);
+            seatDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            seatDialog.setSize(800, 600); // Increased size
+            seatDialog.setLocationRelativeTo(this);
+
+            // Add Go Back button
+            JButton goBackButton = new JButton("Go Back");
+            goBackButton.addActionListener(e -> {
+                seatDialog.dispose();
+                dispose(); // Close the current window
+                SwingUtilities.invokeLater(() -> {
+                    UserDashboardUI dashboard = new UserDashboardUI(currentUser);
+                    dashboard.setVisible(true);
+                });
+            });
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.add(goBackButton);
+            containerPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Add the container panel to the dialog
+            seatDialog.add(containerPanel);
+            seatDialog.setVisible(true);
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Database error occurred: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Database error occurred: " + ex.getMessage(), 
+                "Database Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private JButton createSeatButton(String seatNumber, List<String> bookedSeats, Flight selectedFlight) {
+        JButton seatButton = new JButton(seatNumber);
+        seatButton.setPreferredSize(new Dimension(40, 30));
+        
+        // Check if seat is already booked
+        if (bookedSeats.contains(seatNumber)) {
+            seatButton.setEnabled(false);
+            seatButton.setBackground(Color.RED);
+        } else {
+            // Check if it's a window seat
+            char seatLetter = seatNumber.charAt(seatNumber.length() - 1);
+            if (seatLetter == 'A' || seatLetter == 'D') {
+                seatButton.setBackground(Color.GREEN);
+            } else {
+                seatButton.setBackground(Color.YELLOW);
+            }
+        }
+        
+        seatButton.addActionListener(e -> handleSeatSelection(seatButton, seatNumber, selectedFlight));
+        return seatButton;
+    }
+
+    private void handleSeatSelection(JButton seatButton, String seatNumber, Flight selectedFlight) {
+        char seatLetter = seatNumber.charAt(seatNumber.length() - 1);
+        String seatType = (seatLetter == 'A' || seatLetter == 'D') ? "WINDOW" : "AISLE";
+        
+        // Check if this matches user's preference
+        if (currentUser.getDefaultSeatPreference() != null && 
+            !currentUser.getDefaultSeatPreference().equalsIgnoreCase(seatType)) {
+            int response = JOptionPane.showConfirmDialog(this,
+                "This seat doesn't match your preferred seat type (" + 
+                currentUser.getDefaultSeatPreference() + "). Would you like to proceed?",
+                "Seat Type Mismatch",
+                JOptionPane.YES_NO_OPTION);
+            if (response != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+        
+        // Create booking
+        try {
+            Booking booking = new Booking();
+            booking.setBookingReference("BK" + (100000 + (int)(Math.random() * 900000)));
+            booking.setUserId(currentUser.getId());
+            booking.setFlightId(selectedFlight.getId());
+            booking.setBookingDate(LocalDateTime.now());
+            booking.setSeatNumber(seatNumber);
+            booking.setSeatPreference(seatType);
+            booking.setActive(true);
+
+            if (bookingDAO.createBooking(booking)) {
+                selectedFlight.setAvailableSeats(selectedFlight.getAvailableSeats() - 1);
+                flightDAO.updateFlight(selectedFlight);
+
+                JOptionPane.showMessageDialog(this, 
+                    "Booking successful!\nBooking Reference: " + booking.getBookingReference() +
+                    "\nFlight: " + selectedFlight.getFlightNumber() +
+                    "\nSeat: " + seatNumber + " (" + seatType + ")",
+                    "Booking Confirmed", 
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                dispose(); // Close the current window
+                SwingUtilities.invokeLater(() -> {
+                    UserDashboardUI dashboard = new UserDashboardUI(currentUser);
+                    dashboard.setVisible(true);
+                });
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Failed to create booking. Please try again.",
+                    "Booking Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Database error: " + ex.getMessage(),
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void bookFlight() {
+        int selectedRow = flightsTable.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a flight to book!", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String flightNumber = (String) tableModel.getValueAt(selectedRow, 0);
+        String seatPreference = currentUser.getDefaultSeatPreference();
+
+        try {
+            // Check if the flight has available preferred seats
+            Flight flight = flightDAO.getFlightByNumber(flightNumber);
+            if (seatPreference != null && !seatPreference.isEmpty()) {
+                if (flight.getAvailablePreferredSeats() <= 0) {
+                    int response = JOptionPane.showConfirmDialog(this,
+                        "No " + seatPreference + " seats available. Would you like to book a different seat type?",
+                        "Preferred Seats Unavailable",
+                        JOptionPane.YES_NO_OPTION);
+                    if (response != JOptionPane.YES_OPTION) {
+                        return;
+                    }
+                }
+            }
+
+            // Proceed with booking
+            Booking booking = new Booking();
+            booking.setUserId(currentUser.getId());
+            booking.setFlightId(flight.getId());
+            booking.setSeatPreference(seatPreference);
+            booking.setBookingDate(LocalDateTime.now());
+
+            if (bookingDAO.createBooking(booking)) {
+                JOptionPane.showMessageDialog(this,
+                    "Flight booked successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+                new UserDashboardUI(currentUser).setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Failed to book flight. Please try again.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Database error: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 

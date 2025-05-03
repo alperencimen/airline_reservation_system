@@ -72,10 +72,19 @@ public class UserSearchFlights extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 3;
         formPanel.add(searchButton, gbc);
+
+        // Add Show All Active Flights button
+        JButton showAllButton = new JButton("Show All Active Flights");
+        showAllButton.setBackground(Color.ORANGE);
+        showAllButton.setOpaque(true);
+        showAllButton.setBorderPainted(false);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(showAllButton, gbc);
         
         mainPanel.add(formPanel, BorderLayout.NORTH);
         
-        tableModel = new DefaultTableModel(new Object[]{"Flight Number", "Departure", "Arrival", "Departure Time", "Available Seats"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"Flight Number", "Departure", "Arrival", "Departure Time", "Total Seats"}, 0);
         flightsTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(flightsTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -88,6 +97,7 @@ public class UserSearchFlights extends JFrame {
         getRootPane().setDefaultButton(searchButton);
         
         searchButton.addActionListener(e -> searchFlights());
+        showAllButton.addActionListener(e -> loadAllActiveFlights());
         goBackButton.addActionListener(e -> {
             dispose();
             new UserDashboardUI(currentUser).setVisible(true);
@@ -117,7 +127,7 @@ public class UserSearchFlights extends JFrame {
                         flight.getDepartureAirport(),
                         flight.getArrivalAirport(),
                         flight.getDepartureTime().format(dtf),
-                        flight.getAvailableSeats()
+                        flight.getTotalSeats()
                     });
                 }
             }
@@ -125,6 +135,25 @@ public class UserSearchFlights extends JFrame {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, "Invalid date format! Please use yyyy-MM-dd.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadAllActiveFlights() {
+        try {
+            List<Flight> flights = flightDAO.getAllFlights();
+            tableModel.setRowCount(0);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            for (Flight flight : flights) {
+                tableModel.addRow(new Object[]{
+                    flight.getFlightNumber(),
+                    flight.getDepartureAirport(),
+                    flight.getArrivalAirport(),
+                    flight.getDepartureTime().format(dtf),
+                    flight.getTotalSeats()
+                });
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
