@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 
 public class UserBookFlights extends JFrame {
     private User currentUser;
@@ -21,12 +20,10 @@ public class UserBookFlights extends JFrame {
     private FlightDAO flightDAO = new FlightDAO();
     private BookingDAO bookingDAO = new BookingDAO();
 
-    // Constants for Seat Layout
     private static final int TOTAL_ROWS = 30;
     private static final char[] SEAT_LETTERS = {'A', 'B', 'C', 'D'};
-    private static final char FIRST_WINDOW_SEAT = SEAT_LETTERS[0]; // 'A'
-    private static final char LAST_WINDOW_SEAT = SEAT_LETTERS[SEAT_LETTERS.length - 1]; // 'D'
-    // --- End Constants ---
+    private static final char FIRST_WINDOW_SEAT = SEAT_LETTERS[0];
+    private static final char LAST_WINDOW_SEAT = SEAT_LETTERS[SEAT_LETTERS.length - 1];
 
     public UserBookFlights(User currentUser) {
         try {
@@ -104,35 +101,22 @@ public class UserBookFlights extends JFrame {
         return seatLetter == FIRST_WINDOW_SEAT || seatLetter == LAST_WINDOW_SEAT;
     }
 
-    /**
-     * Formats a list of seats for display in a JTextArea.
-     * @param seats List of seat strings.
-     * @param seatsPerLine How many seats to display per line.
-     * @return A formatted string with line breaks.
-     */
     private String formatSeatsForDisplay(List<String> seats, int seatsPerLine) {
         StringBuilder display = new StringBuilder();
         int count = 0;
-        // Sort seats
         Collections.sort(seats, (s1, s2) -> {
             int row1 = Integer.parseInt(s1.substring(0, s1.length() - 1));
             int row2 = Integer.parseInt(s2.substring(0, s2.length() - 1));
-            if (row1 != row2) {
-                return Integer.compare(row1, row2);
-            }
+            if (row1 != row2) return Integer.compare(row1, row2);
             return Character.compare(s1.charAt(s1.length() - 1), s2.charAt(s2.length() - 1));
         });
-
         for (String seat : seats) {
-            display.append(String.format("%-5s", seat)); // Pad for alignment
+            display.append(String.format("%-5s", seat));
             count++;
-            if (count % seatsPerLine == 0) {
-                display.append("\n");
-            }
+            if (count % seatsPerLine == 0) display.append("\n");
         }
         return display.toString();
     }
-
 
     private void findAndBookFlight() {
         String flightNumber = flightNumberField.getText().trim().toUpperCase();
@@ -159,50 +143,64 @@ public class UserBookFlights extends JFrame {
                 return;
             }
 
-            // Separate Window and Aisle Seats
             List<String> windowSeats = new ArrayList<>();
             List<String> aisleSeats = new ArrayList<>();
             for (String seat : availableSeatsList) {
                 char seatLetter = seat.charAt(seat.length() - 1);
-                if (isWindowSeat(seatLetter)) {
-                    windowSeats.add(seat);
-                } else {
-                    aisleSeats.add(seat);
-                }
+                if (isWindowSeat(seatLetter)) windowSeats.add(seat);
+                else aisleSeats.add(seat);
             }
 
-            // Create Custom Panel for Seat Selection
             JPanel seatSelectionPanel = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(5, 5, 5, 5);
             gbc.fill = GridBagConstraints.BOTH;
             gbc.weightx = 1.0;
-            gbc.weighty = 1.0; // Allow text areas to grow
+            gbc.weighty = 1.0;
 
-            // Window Seats Area
-            JTextArea windowTextArea = new JTextArea(formatSeatsForDisplay(windowSeats, 5));
-            windowTextArea.setEditable(false);
-            windowTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            JScrollPane windowScrollPane = new JScrollPane(windowTextArea);
-            windowScrollPane.setBorder(BorderFactory.createTitledBorder("Window Seats"));
-            gbc.gridx = 0; gbc.gridy = 0;
-            seatSelectionPanel.add(windowScrollPane, gbc);
-
-            // Aisle Seats Area
-            JTextArea aisleTextArea = new JTextArea(formatSeatsForDisplay(aisleSeats, 5)); // 5 seats per line
-            aisleTextArea.setEditable(false);
-            aisleTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            JScrollPane aisleScrollPane = new JScrollPane(aisleTextArea);
-            aisleScrollPane.setBorder(BorderFactory.createTitledBorder("Aisle Seats"));
-            gbc.gridx = 1; gbc.gridy = 0;
-            seatSelectionPanel.add(aisleScrollPane, gbc);
-
-            // Preferred size for the scroll panes to encourage reasonable dialog size
             Dimension preferredSize = new Dimension(200, 150);
-            windowScrollPane.setPreferredSize(preferredSize);
-            aisleScrollPane.setPreferredSize(preferredSize);
 
-            // Seat Input Field
+            if (currentUser.getDefaultSeatPreference() == null) {
+                JTextArea windowTextArea = new JTextArea(formatSeatsForDisplay(windowSeats, 5));
+                windowTextArea.setEditable(false);
+                windowTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                JScrollPane windowScrollPane = new JScrollPane(windowTextArea);
+                windowScrollPane.setBorder(BorderFactory.createTitledBorder("Window Seats"));
+                windowScrollPane.setPreferredSize(preferredSize);
+
+                JTextArea aisleTextArea = new JTextArea(formatSeatsForDisplay(aisleSeats, 5));
+                aisleTextArea.setEditable(false);
+                aisleTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                JScrollPane aisleScrollPane = new JScrollPane(aisleTextArea);
+                aisleScrollPane.setBorder(BorderFactory.createTitledBorder("Aisle Seats"));
+                aisleScrollPane.setPreferredSize(preferredSize);
+
+                gbc.gridx = 0; gbc.gridy = 0;
+                seatSelectionPanel.add(windowScrollPane, gbc);
+                gbc.gridx = 1;
+                seatSelectionPanel.add(aisleScrollPane, gbc);
+            } else if (currentUser.getDefaultSeatPreference().equalsIgnoreCase("WINDOW")) {
+                JTextArea windowTextArea = new JTextArea(formatSeatsForDisplay(windowSeats, 5));
+                windowTextArea.setEditable(false);
+                windowTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                JScrollPane windowScrollPane = new JScrollPane(windowTextArea);
+                windowScrollPane.setBorder(BorderFactory.createTitledBorder("Window Seats"));
+                windowScrollPane.setPreferredSize(preferredSize);
+
+                gbc.gridx = 0; gbc.gridy = 0;
+                seatSelectionPanel.add(windowScrollPane, gbc);
+            } else if (currentUser.getDefaultSeatPreference().equalsIgnoreCase("AISLE")) {
+                JTextArea aisleTextArea = new JTextArea(formatSeatsForDisplay(aisleSeats, 5));
+                aisleTextArea.setEditable(false);
+                aisleTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                JScrollPane aisleScrollPane = new JScrollPane(aisleTextArea);
+                aisleScrollPane.setBorder(BorderFactory.createTitledBorder("Aisle Seats"));
+                aisleScrollPane.setPreferredSize(preferredSize);
+
+                gbc.gridx = 0; gbc.gridy = 0;
+                seatSelectionPanel.add(aisleScrollPane, gbc);
+            }
+
             JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             inputPanel.add(new JLabel("Enter Desired Seat (e.g., 1A):"));
             JTextField seatInputTextField = new JTextField(5);
@@ -213,27 +211,17 @@ public class UserBookFlights extends JFrame {
             gbc.weighty = 0;
             seatSelectionPanel.add(inputPanel, gbc);
 
-            // Show Custom Dialog
-            int result = JOptionPane.showOptionDialog(
-                    this,                             // Parent component
-                    seatSelectionPanel,               // Message (our custom panel)
-                    "Select Your Seat for Flight " + flightNumber, // Title
-                    JOptionPane.OK_CANCEL_OPTION,     // Option type
-                    JOptionPane.PLAIN_MESSAGE,        // Message type
-                    null,                             // Icon (default)
-                    null,                             // Options (default OK/Cancel)
-                    null                              // Initial value (none)
-            );
+            int result = JOptionPane.showOptionDialog(this, seatSelectionPanel, "Select Your Seat for Flight " + flightNumber,
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 
             if (result == JOptionPane.OK_OPTION) {
                 String desiredSeatInput = seatInputTextField.getText();
                 if (desiredSeatInput == null || desiredSeatInput.trim().isEmpty()) {
                     JOptionPane.showMessageDialog(this,"Seat selection cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
-                    return; // Or re-prompt
+                    return;
                 }
                 String desiredSeat = desiredSeatInput.trim().toUpperCase();
 
-                // Validate Seat Choice and Book
                 if (!allPossibleSeats.contains(desiredSeat)) {
                     JOptionPane.showMessageDialog(this,
                             "Invalid seat format: '" + desiredSeatInput + "'. Please use format like '1A', '23C'.",
@@ -242,7 +230,6 @@ public class UserBookFlights extends JFrame {
                 }
 
                 if (availableSeatsList.contains(desiredSeat)) {
-                    // Seat is valid and available, proceed with booking
                     String bookingRef = "BK" + (100000 + (int)(Math.random() * 900000));
 
                     Booking booking = new Booking();
@@ -273,10 +260,9 @@ public class UserBookFlights extends JFrame {
                     }
 
                 } else {
-                    // Seat is valid format but already taken or wasn't available
                     JOptionPane.showMessageDialog(this, "Seat " + desiredSeat + " is not available. Please choose from the lists.", "Seat Unavailable", JOptionPane.ERROR_MESSAGE);
                 }
-            } // else user clicked Cancel or closed the dialog
+            }
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Database error occurred: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
@@ -287,19 +273,16 @@ public class UserBookFlights extends JFrame {
         }
     }
 
-/*
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             User testUser = new User();
             testUser.setId(1); testUser.setUsername("testuser"); testUser.setActive(true); testUser.setAdmin(false);
             if (testUser.getId() > 0) {
-                 new UserBookFlights(testUser).setVisible(true);
+                new UserBookFlights(testUser).setVisible(true);
             } else {
-                 System.err.println("Test user setup failed.");
-                 JOptionPane.showMessageDialog(null, "Test user configuration error.", "Error", JOptionPane.ERROR_MESSAGE);
+                System.err.println("Test user setup failed.");
+                JOptionPane.showMessageDialog(null, "Test user configuration error.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
- */
-
 }
