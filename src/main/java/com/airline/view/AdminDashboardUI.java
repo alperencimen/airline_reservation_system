@@ -111,10 +111,10 @@ public class AdminDashboardUI extends JFrame {
             dispose();
             SwingUtilities.invokeLater(() -> new AdminCancelFlight(adminUser).setVisible(true));
         });
-        JButton viewUsersButton = new JButton("View Users");
-        viewUsersButton.addActionListener(e -> {
+        JButton manageUsersButton = new JButton("Manage Users");
+        manageUsersButton.addActionListener(e -> {
             dispose();
-            SwingUtilities.invokeLater(() -> new AdminViewUsersUI().setVisible(true));
+            SwingUtilities.invokeLater(() -> new AdminManageUsersUI(adminUser).setVisible(true));
         });
 
         JButton viewBookingsButton = new JButton("View Bookings");
@@ -127,13 +127,13 @@ public class AdminDashboardUI extends JFrame {
         Font buttonFont = new Font("SansSerif", Font.PLAIN, 14);
         addFlightButton.setFont(buttonFont);
         cancelFlightButton.setFont(buttonFont);
-        viewUsersButton.setFont(buttonFont);
+        manageUsersButton.setFont(buttonFont);
         viewBookingsButton.setFont(buttonFont);
         logoutButton.setFont(buttonFont);
 
         centerPanel.add(addFlightButton);
         centerPanel.add(cancelFlightButton);
-        centerPanel.add(viewUsersButton);
+        centerPanel.add(manageUsersButton);
         centerPanel.add(viewBookingsButton);
         centerPanel.add(logoutButton);
 
