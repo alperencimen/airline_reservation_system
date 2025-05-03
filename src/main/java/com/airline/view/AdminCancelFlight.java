@@ -9,6 +9,7 @@ import com.airline.model.User;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.net.URL;
 import java.sql.SQLException;
@@ -20,6 +21,8 @@ public class AdminCancelFlight extends JFrame {
     private final FlightDAO flightDAO = new FlightDAO();
     private final BookingDAO bookingDAO = new BookingDAO();
     private final NotificationDAO notificationDAO = new NotificationDAO();
+    private JTable flightsTable;
+    private DefaultTableModel tableModel;
 
     public AdminCancelFlight(User adminUser) {
         try {
@@ -66,32 +69,21 @@ public class AdminCancelFlight extends JFrame {
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         mainPanel.add(headerLabel, BorderLayout.NORTH);
 
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        centerPanel.add(new JLabel("Flight Number:"), gbc);
-
-        flightNumberField = new JTextField(15);
-        gbc.gridx = 1;
-        centerPanel.add(flightNumberField, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        JLabel hint = new JLabel("(e.g., AA1111)");
-        hint.setFont(new Font("SansSerif", Font.ITALIC, 11));
-        hint.setForeground(Color.GRAY);
-        centerPanel.add(hint, gbc);
-
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        // Table for active flights
+        tableModel = new DefaultTableModel(new Object[]{
+            "Flight Number", "Departure", "Arrival", "Departure Time", "Total Seats"
+        }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        flightsTable = new JTable(tableModel);
+        JScrollPane tableScrollPane = new JScrollPane(flightsTable);
+        mainPanel.add(tableScrollPane, BorderLayout.CENTER);
 
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton cancelBtn = new JButton("Cancel Flight");
+        JButton cancelBtn = new JButton("Cancel Selected Flight");
         JButton backBtn = new JButton("Go Back");
         southPanel.add(cancelBtn);
         southPanel.add(backBtn);
@@ -99,45 +91,59 @@ public class AdminCancelFlight extends JFrame {
 
         getRootPane().setDefaultButton(cancelBtn);
 
-        cancelBtn.addActionListener(e -> cancelFlight());
+        cancelBtn.addActionListener(e -> cancelSelectedFlight());
         backBtn.addActionListener(e -> {
             dispose();
             SwingUtilities.invokeLater(() -> new AdminDashboardUI(adminUser).setVisible(true));
         });
 
         add(mainPanel);
+        loadActiveFlights();
     }
 
-    private void cancelFlight() {
-        String flightNumber = flightNumberField.getText().trim().toUpperCase();
-        if (flightNumber.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Flight number cannot be empty!", "Input Error", JOptionPane.WARNING_MESSAGE);
+    private void loadActiveFlights() {
+        try {
+            List<Flight> flights = flightDAO.getAllFlights(); // Only active flights
+            tableModel.setRowCount(0);
+            for (Flight flight : flights) {
+                tableModel.addRow(new Object[]{
+                    flight.getFlightNumber(),
+                    flight.getDepartureAirport(),
+                    flight.getArrivalAirport(),
+                    flight.getDepartureTime().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                    flight.getTotalSeats()
+                });
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error loading flights: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cancelSelectedFlight() {
+        int selectedRow = flightsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a flight to cancel.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
+        String flightNumber = (String) tableModel.getValueAt(selectedRow, 0);
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Are you sure to cancel flight '" + flightNumber + "'?",
                 "Confirm Cancellation",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
-
         if (confirm != JOptionPane.YES_OPTION) return;
-
         try {
             Flight flight = flightDAO.getFlightByNumberIgnoreActive(flightNumber);
             if (flight == null) {
                 JOptionPane.showMessageDialog(this, "Flight not found!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
             if (!flight.isActive()) {
                 JOptionPane.showMessageDialog(this, "Flight is already inactive.", "Info", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-
             flight.setActive(false);
             boolean success = flightDAO.updateFlightStatus(flight.getId(), false);
-
             if (success) {
                 List<Booking> bookings = bookingDAO.getBookingsByFlightId(flight.getId());
                 for (Booking b : bookings) {
@@ -147,14 +153,11 @@ public class AdminCancelFlight extends JFrame {
                                 "Your booking '" + b.getBookingReference() + "' was cancelled due to flight cancellation.");
                     }
                 }
-
                 JOptionPane.showMessageDialog(this, "Flight and related bookings successfully cancelled.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
-                SwingUtilities.invokeLater(() -> new AdminDashboardUI(adminUser).setVisible(true));
+                loadActiveFlights(); // Refresh the table
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to cancel the flight in database.", "Database Error", JOptionPane.ERROR_MESSAGE);
             }
-
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "SQL Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();

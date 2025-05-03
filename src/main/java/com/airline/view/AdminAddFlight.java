@@ -67,7 +67,7 @@ public class AdminAddFlight extends JFrame {
         centerPanel.add(departureTimeField);
         centerPanel.add(new JLabel("Arrival Time (yyyy-MM-dd HH:mm):"));
         centerPanel.add(arrivalTimeField);
-        centerPanel.add(new JLabel("Available Seats:"));
+        centerPanel.add(new JLabel("Total Seats:"));
         centerPanel.add(availableSeatsField);
         centerPanel.add(new JLabel("Airline Name:"));
         centerPanel.add(airlineNameField);
@@ -110,6 +110,7 @@ public class AdminAddFlight extends JFrame {
             flight.setDepartureTime(departureTime);
             flight.setArrivalTime(arrivalTime);
             flight.setAvailableSeats(availableSeats);
+            flight.setTotalSeats(availableSeats);
             flight.setAirlineName(airlineName);
             flight.setActive(true);
 

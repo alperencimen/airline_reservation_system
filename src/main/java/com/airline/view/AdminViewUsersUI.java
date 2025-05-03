@@ -66,7 +66,7 @@ public class AdminViewUsersUI extends JFrame {
         goBackButton.addActionListener(e -> {
             dispose();
             if (adminUser != null) {
-                SwingUtilities.invokeLater(() -> new AdminDashboardUI(adminUser).setVisible(true));
+            SwingUtilities.invokeLater(() -> new AdminDashboardUI(adminUser).setVisible(true));
             } else {
                 SwingUtilities.invokeLater(() -> new AdminDashboardUI(new User()).setVisible(true));
             }
