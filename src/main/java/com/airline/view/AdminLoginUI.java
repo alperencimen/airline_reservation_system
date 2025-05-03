@@ -213,7 +213,7 @@ public class AdminLoginUI extends JFrame implements ARSView {
 
                 // Open Admin Dashboard
                 SwingUtilities.invokeLater(() -> {
-                    AdminDashboardUI adminDashboard = new AdminDashboardUI();
+                    AdminDashboardUI adminDashboard = new AdminDashboardUI(user);
                     adminDashboard.setVisible(true); // Or display() if it implements ARSView
                 });
 
@@ -233,7 +233,7 @@ public class AdminLoginUI extends JFrame implements ARSView {
         }
     }
 
-/*
+
 //Uncomment this part only if you want to run the AdminLoginUI without main code itself. (Visualization purposes)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -241,5 +241,5 @@ public class AdminLoginUI extends JFrame implements ARSView {
             adminLogin.display();
         });
     }
-*/
+
 }
