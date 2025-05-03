@@ -13,10 +13,10 @@ import java.util.List;
 
 public class AdminViewUsersUI extends JFrame {
 
-    private JTable usersTable;
-    private User adminUser;
-    private DefaultTableModel tableModel;
-    private UserDAO userDAO = new UserDAO();
+    protected JTable usersTable;
+    protected User adminUser;
+    protected DefaultTableModel tableModel;
+    protected UserDAO userDAO = new UserDAO();
 
     public AdminViewUsersUI() {
         try {
@@ -35,9 +35,11 @@ public class AdminViewUsersUI extends JFrame {
     }
 
     public AdminViewUsersUI(User adminUser) {
+        this();
+        this.adminUser = adminUser;
     }
 
-    private void initComponents() {
+    protected void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
@@ -63,7 +65,11 @@ public class AdminViewUsersUI extends JFrame {
         JButton goBackButton = new JButton("Go Back");
         goBackButton.addActionListener(e -> {
             dispose();
-            SwingUtilities.invokeLater(() -> new AdminDashboardUI(adminUser).setVisible(true));
+            if (adminUser != null) {
+                SwingUtilities.invokeLater(() -> new AdminDashboardUI(adminUser).setVisible(true));
+            } else {
+                SwingUtilities.invokeLater(() -> new AdminDashboardUI(new User()).setVisible(true));
+            }
         });
         southPanel.add(goBackButton);
 
@@ -71,7 +77,7 @@ public class AdminViewUsersUI extends JFrame {
         add(mainPanel);
     }
 
-    private void loadUsers() {
+    protected void loadUsers() {
         try {
             List<User> users = userDAO.getAllUsers();
             tableModel.setRowCount(0);
