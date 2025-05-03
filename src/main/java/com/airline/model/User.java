@@ -9,6 +9,8 @@ public class User implements ARSModel {
     private String country;
     private boolean isAdmin;
     private boolean isActive;
+    private String defaultSeatPreference;
+
 
     // Getters
     public int getId() {
@@ -43,6 +45,8 @@ public class User implements ARSModel {
         return isActive;
     }
 
+    public String getDefaultSeatPreference() { return defaultSeatPreference; }
+
     // Setters
     public void setId(int id) {
         this.id = id;
@@ -75,4 +79,7 @@ public class User implements ARSModel {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    public void setDefaultSeatPreference(String preference) { this.defaultSeatPreference = preference; }
+
 }
