@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.42, for macos15 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
 --
 -- Host: localhost    Database: airline_db
 -- ------------------------------------------------------
--- Server version	9.3.0
+-- Server version	8.0.41
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -17,7 +17,7 @@
 
 --
 -- Table structure for table `flights`
---bookingsflights
+--
 
 DROP TABLE IF EXISTS `flights`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -33,9 +33,10 @@ CREATE TABLE `flights` (
   `is_active` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `airline_name` varchar(100) NOT NULL DEFAULT 'Unknown Airline',
+  `total_seats` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `flight_number` (`flight_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +45,7 @@ CREATE TABLE `flights` (
 
 LOCK TABLES `flights` WRITE;
 /*!40000 ALTER TABLE `flights` DISABLE KEYS */;
-INSERT INTO `flights` VALUES (1,'TK1234','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-01 16:26:06','Unknown Airline'),(2,'BA5678','London','New York','2026-03-30 14:00:00','2026-03-30 20:00:00',210,0,'2025-05-01 16:26:06','Unknown Airline'),(3,'AA9012','New York','Los Angeles','2026-03-30 09:00:00','2026-03-30 12:00:00',179,0,'2025-05-01 16:26:06','Unknown Airline'),(4,'LH3456','Frankfurt','Tokyo','2026-03-30 11:00:00','2026-03-31 05:00:00',240,0,'2025-05-01 16:26:06','Unknown Airline'),(5,'BK111111','İstanbul','Ankara','2025-10-05 12:00:00','2025-12-05 12:00:00',99,0,'2025-05-01 17:08:07','Unknown Airline'),(6,'MZ1234','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-01 17:20:07','Unknown Airline'),(7,'ZZ1234','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',100,0,'2025-05-01 18:25:52','Turkish Airlines'),(10,'TK1235','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-01 18:55:18','Turkish Airlines'),(11,'MZ1111','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-02 11:14:51','Turkish Airlines'),(12,'MZ2222','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',148,0,'2025-05-02 11:31:02','British Airways'),(13,'MZ3333','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',150,1,'2025-05-02 11:31:38','American Airlines');
+INSERT INTO `flights` VALUES (1,'TK1234','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-01 16:26:06','Unknown Airline',150),(2,'BA5678','London','New York','2026-03-30 14:00:00','2026-03-30 20:00:00',210,0,'2025-05-01 16:26:06','Unknown Airline',210),(3,'AA9012','New York','Los Angeles','2026-03-30 09:00:00','2026-03-30 12:00:00',179,0,'2025-05-01 16:26:06','Unknown Airline',179),(4,'LH3456','Frankfurt','Tokyo','2026-03-30 11:00:00','2026-03-31 05:00:00',240,0,'2025-05-01 16:26:06','Unknown Airline',0),(5,'BK111111','İstanbul','Ankara','2025-10-05 12:00:00','2025-12-05 12:00:00',99,0,'2025-05-01 17:08:07','Unknown Airline',0),(6,'MZ1234','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-01 17:20:07','Unknown Airline',0),(7,'ZZ1234','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',100,0,'2025-05-01 18:25:52','Turkish Airlines',0),(10,'TK1235','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-01 18:55:18','Turkish Airlines',0),(11,'MZ1111','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,0,'2025-05-02 11:14:51','Turkish Airlines',0),(12,'MZ2222','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',148,0,'2025-05-02 11:31:02','British Airways',0),(13,'MZ3333','Istanbul','London','2026-03-30 10:00:00','2026-03-30 13:00:00',149,1,'2025-05-02 11:31:38','American Airlines',150),(14,'SS2003','Istanbul','Madrid','2026-05-05 12:00:00','2026-05-05 16:30:00',200,0,'2025-05-03 14:06:17','SerdarAırline',0),(16,'SS2004','Madrid','İstanbul','2026-05-05 10:00:00','2026-05-05 16:30:00',99,1,'2025-05-03 14:26:12','SerdarAli',100);
 /*!40000 ALTER TABLE `flights` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -57,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-02 23:16:03
+-- Dump completed on 2025-05-03 20:12:30
