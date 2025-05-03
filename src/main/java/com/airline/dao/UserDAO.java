@@ -51,6 +51,16 @@ public class UserDAO {
         }
         return null;
     }
+    public boolean updateUserPreference(User user) throws SQLException {
+        String sql = "UPDATE users SET default_seat_preference = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getDefaultSeatPreference());
+            stmt.setInt(2, user.getId());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
 
     public boolean updateUserStatus(int userId, boolean isActive) throws SQLException {
         String sql = "UPDATE users SET is_active = ? WHERE id = ?";
