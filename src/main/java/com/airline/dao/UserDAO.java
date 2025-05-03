@@ -98,4 +98,43 @@ public class UserDAO {
         }
         return users;
     }
+
+    public User getUserById(int id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getInt("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setGender(rs.getString("gender"));
+                    user.setAge(rs.getInt("age"));
+                    user.setCountry(rs.getString("country"));
+                    user.setAdmin(rs.getBoolean("is_admin"));
+                    user.setActive(rs.getBoolean("is_active"));
+                    return user;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean updateUser(User user) throws SQLException {
+        String sql = "UPDATE users SET username = ?, password = ?, gender = ?, age = ?, country = ?, is_admin = ?, is_active = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getGender());
+            pstmt.setInt(4, user.getAge());
+            pstmt.setString(5, user.getCountry());
+            pstmt.setBoolean(6, user.isAdmin());
+            pstmt.setBoolean(7, user.isActive());
+            pstmt.setInt(8, user.getId());
+            return pstmt.executeUpdate() > 0;
+        }
+    }
 } 
