@@ -1,8 +1,9 @@
 # Ignore compiled Java classes
+target/
 *.class
 # Ignore system files
 .DS_Store
 # Ignore VSCode and JetBrains project files
 .vscode/
 .idea/
-
+target/**/*.class

@@ -1,6 +1,6 @@
 package com.airline.model;
 
-public class User {
+public class User implements ARSModel {
     private int id;
     private String username;
     private String password;
@@ -9,6 +9,8 @@ public class User {
     private String country;
     private boolean isAdmin;
     private boolean isActive;
+    private String defaultSeatPreference;
+
 
     // Getters
     public int getId() {
@@ -43,6 +45,8 @@ public class User {
         return isActive;
     }
 
+    public String getDefaultSeatPreference() { return defaultSeatPreference; }
+
     // Setters
     public void setId(int id) {
         this.id = id;
@@ -75,4 +79,7 @@ public class User {
     public void setActive(boolean active) {
         isActive = active;
     }
-} 
+
+    public void setDefaultSeatPreference(String preference) { this.defaultSeatPreference = preference; }
+
+}

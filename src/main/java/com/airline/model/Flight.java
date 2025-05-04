@@ -2,7 +2,7 @@ package com.airline.model;
 
 import java.time.LocalDateTime;
 
-public class Flight {
+public class Flight implements ARSModel {
     private int id;
     private String flightNumber;
     private String departureAirport;
@@ -10,8 +10,10 @@ public class Flight {
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private int availableSeats;
-    private String airlineName;
+    private int availablePreferredSeats;
     private boolean isActive;
+    private String airlineName;
+    private int totalSeats;
 
     // Getters
     public int getId() {
@@ -42,12 +44,16 @@ public class Flight {
         return availableSeats;
     }
 
+    public int getAvailablePreferredSeats() {
+        return availablePreferredSeats;
+    }
+
     public String getAirlineName() {
         return airlineName;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public int getTotalSeats() {
+        return totalSeats;
     }
 
     // Setters
@@ -79,11 +85,18 @@ public class Flight {
         this.availableSeats = availableSeats;
     }
 
+    public void setAvailablePreferredSeats(int availablePreferredSeats) {
+        this.availablePreferredSeats = availablePreferredSeats;
+    }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { this.isActive = active; }
+
     public void setAirlineName(String airlineName) {
         this.airlineName = airlineName;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setTotalSeats(int totalSeats) {
+        this.totalSeats = totalSeats;
     }
-} 
+}
