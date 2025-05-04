@@ -229,8 +229,14 @@ public class UserDashboardUI extends JFrame implements ARSView {
         });
 
         settingsButton.addActionListener(e -> {
-            dispose();
-            SwingUtilities.invokeLater(() -> new SettingsUI(currentUser).setVisible(true));
+            if (currentUser == null) {
+                JOptionPane.showMessageDialog(UserDashboardUI.this, "Please log in to access settings!", "Login Required", JOptionPane.ERROR_MESSAGE);
+                dispose();
+                SwingUtilities.invokeLater(() -> new LoginUI().display());
+            } else {
+                dispose();
+                SwingUtilities.invokeLater(() -> new SettingsUI(currentUser).setVisible(true));
+            }
         });
 
 
