@@ -6,3 +6,4 @@ target/
 # Ignore VSCode and JetBrains project files
 .vscode/
 .idea/
+target/**/*.class
