@@ -84,7 +84,9 @@ public class UserSearchFlights extends JFrame {
         
         mainPanel.add(formPanel, BorderLayout.NORTH);
         
-        tableModel = new DefaultTableModel(new Object[]{"Flight Number", "Departure", "Arrival", "Departure Time", "Total Seats"}, 0);
+        tableModel = new DefaultTableModel(
+            new Object[]{"Flight Number", "Departure", "Arrival", "Departure Time", "Total Seats", "Available Seats"}, 0
+        );
         flightsTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(flightsTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -127,7 +129,8 @@ public class UserSearchFlights extends JFrame {
                         flight.getDepartureAirport(),
                         flight.getArrivalAirport(),
                         flight.getDepartureTime().format(dtf),
-                        flight.getTotalSeats()
+                        flight.getTotalSeats(),
+                        flight.getAvailableSeats()
                     });
                 }
             }
@@ -149,7 +152,8 @@ public class UserSearchFlights extends JFrame {
                     flight.getDepartureAirport(),
                     flight.getArrivalAirport(),
                     flight.getDepartureTime().format(dtf),
-                    flight.getTotalSeats()
+                    flight.getTotalSeats(),
+                    flight.getAvailableSeats()
                 });
             }
         } catch (SQLException ex) {
