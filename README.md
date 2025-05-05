@@ -10,12 +10,12 @@ A **Java-based Airline Reservation System** that provides a user-friendly interf
 - **User Registration & Login**: Secure login and registration system.
 - **Flight Booking**: Search and book flights easily.
 - **Booking Management**: View, update, or cancel bookings.
+- **Notification**: Get notified when your flights are cancelled, before getting aggrieved!
 
 ### Admin Features
 - **Admin Login**: Secure admin login interface.
 - **User Management**: Add, suspend, or delete users.
 - **Flight Management**: Add, update, or delete flight details.
-- **Notification**: Get notified when your flights are cancelled, before getting aggrieved!
 
 ---
 
