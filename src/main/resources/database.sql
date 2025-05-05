@@ -27,7 +27,8 @@ INSERT INTO `users` VALUES
                         (3,'jane_smith','pass456','F',32,'UK',0,1,'2025-05-01 16:26:06',NULL),
                         (4,'mike_wilson','pass789','M',45,'Canada',0,1,'2025-05-01 16:26:06',NULL),
                         (5,'ulas','1','M',22,'Turkiye',0,1,'2025-05-01 16:26:06','WINDOW'),
-                        (6,'melih','zekvan','Male',22,'Türkiye',0,1,'2025-05-01 17:11:26','AISLE');
+                        (6,'melih','zekvan','Male',22,'Türkiye',0,1,'2025-05-01 17:11:26','AISLE'),
+                        (7,'alperen','1','Male',22,'Türkiye',0,1,'2025-05-01 17:12:26','AISLE');
 
 -- Create flights table
 CREATE TABLE `flights` (
