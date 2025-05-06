@@ -84,9 +84,13 @@ public class UserSearchFlights extends JFrame {
         
         mainPanel.add(formPanel, BorderLayout.NORTH);
         
-        tableModel = new DefaultTableModel(
-            new Object[]{"Flight Number", "Departure", "Arrival", "Departure Time", "Total Seats", "Available Seats"}, 0
-        );
+        String[] columnNames = {"Flight Number", "Departure", "Arrival", "Departure Time", "Total Seats", "Available Seats"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+        };
         flightsTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(flightsTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
