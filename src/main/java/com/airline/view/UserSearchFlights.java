@@ -10,6 +10,10 @@ import java.awt.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class UserSearchFlights extends JFrame {
     private JTextField departureField;
@@ -110,6 +114,8 @@ public class UserSearchFlights extends JFrame {
         });
         
         add(mainPanel);
+
+        addContextMenuToTable(); // Add context menu functionality to the flights table
     }
     
     private void searchFlights() {
@@ -165,14 +171,53 @@ public class UserSearchFlights extends JFrame {
         }
     }
 
-    /*
-    //Uncomment this part only if you want to run the UserSearchFlights without main code itself. (Visualization purposes)
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            UserSearchFlights searchFlightsUI = new UserSearchFlights(null);
-            searchFlightsUI.setVisible(true);
+    private void addContextMenuToTable() {
+        flightsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showPopup(e);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Also check on press for cross-platform compatibility (e.g., macOS)
+                if (e.isPopupTrigger()) {
+                    showPopup(e);
+                }
+            }
+
+            private void showPopup(MouseEvent e) {
+                int row = flightsTable.rowAtPoint(e.getPoint());
+                int col = flightsTable.columnAtPoint(e.getPoint());
+
+                // Ensure the click was on a valid row and the "Flight Number" column (index 0)
+                if (row >= 0 && col == 0) {
+                    // Select the row where the right-click happened
+                    flightsTable.setRowSelectionInterval(row, row);
+
+                    // Retrieve the flight number from the table model
+                    String flightNumber = (String) flightsTable.getValueAt(row, col);
+
+                    if (flightNumber != null && !flightNumber.isEmpty()) {
+                        JPopupMenu popupMenu = new JPopupMenu();
+                        JMenuItem copyItem = new JMenuItem("Copy Flight Number: " + flightNumber);
+
+                        copyItem.addActionListener(actionEvent -> {
+                            // Copy the flight number to the system clipboard
+                            StringSelection stringSelection = new StringSelection(flightNumber);
+                            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                            clipboard.setContents(stringSelection, null);
+                        });
+
+                        popupMenu.add(copyItem);
+                        // Show the popup menu at the mouse click location
+                        popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+            }
         });
     }
 
-     */
 }
