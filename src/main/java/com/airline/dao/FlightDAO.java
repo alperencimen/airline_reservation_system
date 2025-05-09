@@ -22,7 +22,7 @@ public class FlightDAO {
             pstmt.setTimestamp(5, Timestamp.valueOf(flight.getArrivalTime()));
             pstmt.setInt(6, flight.getAvailableSeats());
             pstmt.setInt(7, flight.getTotalSeats());
-            pstmt.setString(8, flight.getAirlineName()); // airline_name
+            pstmt.setString(8, flight.getAirlineName());
             pstmt.setBoolean(9, true);
 
             return pstmt.executeUpdate() > 0;
@@ -30,7 +30,11 @@ public class FlightDAO {
     }
 
     public List<Flight> searchFlights(String departureAirport, String arrivalAirport, Date date) throws SQLException {
-        String sql = "SELECT * FROM flights WHERE departure_airport = ? AND arrival_airport = ? AND DATE(departure_time) = ? AND is_active = true";
+        // H2 ve MySQL uyumlu tarih kontrolü
+        String sql = "SELECT * FROM flights WHERE departure_airport = ? "
+                   + "AND arrival_airport = ? "
+                   + "AND CAST(departure_time AS DATE) = ? "
+                   + "AND is_active = true";
         List<Flight> flights = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -121,7 +125,6 @@ public class FlightDAO {
                 return mapResultSetToFlight(rs);
             }
         }
-
         return null;
     }
 
@@ -141,33 +144,25 @@ public class FlightDAO {
     }
 
     public List<Flight> getFlightsWithPreferredSeats(String seatPreference) throws SQLException {
-        String sql = "SELECT f.*, " +
-                    "COUNT(CASE WHEN s.seat_type = ? AND s.is_available = true THEN 1 END) as available_preferred_seats " +
-                    "FROM flights f " +
-                    "LEFT JOIN seats s ON f.id = s.flight_id " +
-                    "WHERE s.seat_type = ? AND s.is_available = true " +
-                    "GROUP BY f.id " +
-                    "HAVING COUNT(CASE WHEN s.seat_type = ? AND s.is_available = true THEN 1 END) > 0";
-        
+        String sql = "SELECT f.*, "
+                   + "COUNT(CASE WHEN s.seat_type = ? AND s.is_available = true THEN 1 END) as available_preferred_seats "
+                   + "FROM flights f "
+                   + "LEFT JOIN seats s ON f.id = s.flight_id "
+                   + "WHERE s.seat_type = ? AND s.is_available = true "
+                   + "GROUP BY f.id "
+                   + "HAVING COUNT(CASE WHEN s.seat_type = ? AND s.is_available = true THEN 1 END) > 0";
         List<Flight> flights = new ArrayList<>();
+
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setString(1, seatPreference);
             pstmt.setString(2, seatPreference);
             pstmt.setString(3, seatPreference);
-            
+
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                Flight flight = new Flight();
-                flight.setId(rs.getInt("id"));
-                flight.setFlightNumber(rs.getString("flight_number"));
-                flight.setDepartureAirport(rs.getString("departure_airport"));
-                flight.setArrivalAirport(rs.getString("arrival_airport"));
-                flight.setDepartureTime(rs.getTimestamp("departure_time").toLocalDateTime());
-                flight.setAvailableSeats(rs.getInt("available_seats"));
-                flight.setAvailablePreferredSeats(rs.getInt("available_preferred_seats"));
-                flights.add(flight);
+                flights.add(mapResultSetToFlight(rs));
             }
         }
         return flights;
